@@ -2,861 +2,865 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MYDAVIDE | Life OS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#ffffff">
+    <title>MYDAVIDE 8.0</title>
     
     <!-- Fonts & Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
-        /* --- DESIGN SYSTEM --- */
+        /* --- SYSTEM VARIABLES --- */
         :root {
-            --col-fin: #10b981;   /* Emerald Green */
-            --col-evt: #3b82f6;   /* Royal Blue */
-            --col-task: #ef4444;  /* Red */
-            --col-note: #f59e0b;  /* Amber */
-            --col-bg: #f3f4f6;
-            --col-card: rgba(255, 255, 255, 0.9);
-            --col-text: #1f2937;
-            --col-text-soft: #6b7280;
+            /* Palette Richiesta */
+            --col-fin: #10b981;   /* Verde */
+            --col-cal: #2563eb;   /* Blu */
+            --col-task: #ef4444;  /* Rosso */
             
-            --glass: rgba(255, 255, 255, 0.6);
-            --border: 1px solid rgba(255,255,255,0.4);
-            --shadow: 0 10px 40px -10px rgba(0,0,0,0.08);
+            --bg-body: #f8fafc;
+            --bg-card: #ffffff;
+            --col-text: #0f172a;
+            --col-soft: #64748b;
+            --nav-bg: rgba(255, 255, 255, 0.95);
+            
             --radius: 24px;
+            --nav-h: 85px;
+            --shadow: 0 10px 40px -10px rgba(0,0,0,0.08);
+            
+            /* Transitions */
+            --trans: background 0.4s ease, color 0.4s ease, border-color 0.4s ease;
         }
 
-        /* Dark Mode Support */
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --col-bg: #111827;
-                --col-card: rgba(31, 41, 55, 0.85);
-                --col-text: #f9fafb;
-                --col-text-soft: #9ca3af;
-                --border: 1px solid rgba(255,255,255,0.05);
-                --shadow: 0 10px 40px -10px rgba(0,0,0,0.5);
-            }
+        /* Dark Mode Optimized */
+        [data-theme="dark"] {
+            --bg-body: #0f1115;
+            --bg-card: #1e222b;
+            --col-text: #f1f5f9;
+            --col-soft: #94a3b8;
+            --nav-bg: rgba(30, 34, 43, 0.95);
+            --shadow: 0 10px 40px -10px rgba(0,0,0,0.6);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
-        
-        body {
-            background: var(--col-bg); color: var(--col-text);
-            height: 100vh; overflow: hidden; position: relative;
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'DM Sans', sans-serif; -webkit-tap-highlight-color:transparent; }
+        body { background:var(--bg-body); color:var(--col-text); height:100vh; overflow:hidden; transition: var(--trans); }
+
+        /* --- LAYOUT --- */
+        .view { 
+            position:absolute; top:0; left:0; width:100%; height:100%; 
+            padding:20px 20px calc(var(--nav-h) + 20px) 20px; 
+            overflow-y:auto; display:none; opacity:0; transform:scale(0.98); 
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        .view.active { display:block; opacity:1; transform:scale(1); }
+        .view::-webkit-scrollbar { display:none; }
+
+        .header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; padding-top:10px; }
+        .title { font-size:1.8rem; font-weight:800; letter-spacing:-1px; }
+        .btn-icon { 
+            width:42px; height:42px; background:var(--bg-card); border-radius:50%; 
+            display:grid; place-items:center; box-shadow:var(--shadow); cursor:pointer; 
+            color:var(--col-text); transition: var(--trans);
         }
 
-        /* Ambient Background blobs */
-        .ambient {
-            position: fixed; width: 100%; height: 100%; top: 0; left: 0; z-index: -1;
-            background: 
-                radial-gradient(circle at 15% 15%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at 85% 85%, rgba(16, 185, 129, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at 50% 50%, rgba(239, 68, 68, 0.05) 0%, transparent 50%);
+        /* WIDGET CARD STYLE */
+        .widget { 
+            background:var(--bg-card); border-radius:var(--radius); padding:20px; 
+            margin-bottom:15px; box-shadow:var(--shadow); position:relative; overflow:hidden;
+            transition: var(--trans);
         }
+        .widget-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+        .widget-title { font-weight:700; display:flex; align-items:center; gap:8px; }
 
-        /* Layout Views */
-        .view {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            padding: 20px; overflow-y: auto; overflow-x: hidden;
-            opacity: 0; pointer-events: none; transform: scale(0.95);
-            transition: 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
-            display: none;
-        }
-        .view.active { opacity: 1; pointer-events: all; transform: scale(1); display: block; }
-
-        /* Header */
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-top: 10px; }
-        .brand { font-size: 1.4rem; font-weight: 800; letter-spacing: -0.5px; display: flex; align-items: center; gap: 10px; }
-        .btn-icon {
-            width: 44px; height: 44px; border-radius: 14px; background: var(--col-card);
-            border: var(--border); box-shadow: var(--shadow); color: var(--col-text);
-            display: grid; place-items: center; font-size: 1.1rem; cursor: pointer; transition: 0.2s;
-        }
-        .btn-icon:active { transform: scale(0.9); }
-
-        /* --- HOME WIDGETS --- */
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; padding-bottom: 80px; }
-        
-        .card {
-            background: var(--col-card); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border: var(--border); border-radius: var(--radius); padding: 25px;
-            box-shadow: var(--shadow); position: relative; transition: transform 0.2s;
-            display: flex; flex-direction: column;
-        }
-        .card:hover { transform: translateY(-5px); }
-
-        /* Welcome Widget */
-        .w-welcome { grid-column: 1 / -1; background: linear-gradient(135deg, var(--col-evt), #8b5cf6); color: white; border: none; }
-        .weather-badge { 
-            background: rgba(255,255,255,0.2); padding: 5px 12px; border-radius: 20px; 
-            font-size: 0.9rem; display: inline-flex; align-items: center; gap: 6px; margin-bottom: 10px;
+        /* --- HOME --- */
+        .smart-banner {
+            background: linear-gradient(135deg, var(--col-cal), #60a5fa); color: white;
+            padding: 25px; border-radius: var(--radius); min-height: 120px;
+            display: flex; flex-direction: column; justify-content: center; position: relative;
+            cursor: pointer; overflow: hidden; box-shadow: 0 10px 20px -5px rgba(37, 99, 235, 0.4);
         }
         
-        /* Note Widget */
-        .note-area {
-            width: 100%; background: transparent; border: none; resize: none; 
-            color: var(--col-text); font-size: 1rem; margin-top: 10px; outline: none; height: 100px;
+        /* Water */
+        .water-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 15px 0; }
+        .glass {
+            height: 45px; background: var(--bg-body); border-radius: 8px 8px 15px 15px;
+            position: relative; overflow: hidden; cursor: pointer; border: 2px solid rgba(0,0,0,0.05);
         }
+        .glass::after {
+            content:''; position: absolute; bottom:0; left:0; width:100%; height:0%;
+            background: #3b82f6; transition: height 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .glass.full::after { height: 100%; }
 
-        /* --- CALENDAR STYLES --- */
-        .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .week-bar { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-weight: bold; color: var(--col-text-soft); margin-bottom: 10px; font-size: 0.8rem; }
-        .month-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
+        /* --- AGENDA & CALENDAR --- */
+        .cal-controls { display: flex; justify-content: space-between; margin-bottom: 15px; align-items: center; background:var(--bg-card); padding:5px; border-radius:15px; }
+        .cal-month-title { font-weight:bold; color:var(--col-cal); }
         
-        .day {
-            aspect-ratio: 1; border-radius: 14px; background: rgba(255,255,255,0.05); cursor: pointer;
-            display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding-top: 6px;
-            font-size: 0.9rem; position: relative; border: 1px solid transparent; transition: 0.2s;
+        .month-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; }
+        .day-cell { 
+            aspect-ratio:1; border-radius: 12px; font-size: 0.85rem; 
+            padding: 2px; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content:center;
+            border: 1px solid transparent; position: relative;
         }
-        .day.today { background: var(--col-text); color: var(--col-bg); font-weight: bold; }
-        .day:hover { border-color: var(--col-evt); }
-        .day.selected { border: 2px solid var(--col-evt); }
+        .day-cell.today { background: var(--col-cal); color: white; font-weight: bold; }
+        .day-cell.selected { border: 2px solid var(--col-cal); }
+        .dots-row { display:flex; gap:3px; margin-top:2px; }
+        .dot { width:5px; height:5px; border-radius:50%; }
 
-        .dots { display: flex; gap: 3px; margin-top: 4px; flex-wrap: wrap; justify-content: center; width: 80%; }
-        .dot { width: 4px; height: 4px; border-radius: 50%; }
-        .dot.evt { background: var(--col-evt); }
-        .dot.task { background: var(--col-task); }
+        /* --- FINANCE WIDGETS --- */
+        .fin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .big-balance { font-size: 2.5rem; font-weight: 900; color: var(--col-fin); letter-spacing: -1px; }
 
-        /* Day Selector (Recurrence) */
-        .day-selector { display: flex; gap: 5px; margin: 10px 0; justify-content: space-between; }
-        .ds-btn {
-            width: 35px; height: 35px; border-radius: 50%; border: 1px solid var(--col-text-soft);
-            background: transparent; color: var(--col-text-soft); font-size: 0.8rem; cursor: pointer;
-            display: grid; place-items: center; transition: 0.2s;
+        /* --- NAV BOTTOM --- */
+        .nav { 
+            position: fixed; bottom: 0; left: 0; width: 100%; height: var(--nav-h); 
+            background: var(--nav-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            display: flex; justify-content: space-between; align-items: center; 
+            border-top: 1px solid rgba(0,0,0,0.05); z-index: 100; padding: 0 15px;
         }
-        .ds-btn.active { background: var(--col-evt); color: white; border-color: var(--col-evt); font-weight: bold; }
-
-        /* --- LISTS & TASKS --- */
-        .task-item {
-            display: flex; align-items: center; padding: 12px; background: rgba(0,0,0,0.02);
-            border-radius: 16px; margin-bottom: 8px; border-left: 4px solid transparent;
+        .nav-item { 
+            display: flex; flex-direction: column; align-items: center; gap: 5px; 
+            font-size: 0.65rem; color: var(--col-soft); cursor: pointer; width: 60px;
+            transition: 0.2s;
         }
-        .task-item.prio-high { border-left-color: var(--col-task); }
-        .task-item.done { opacity: 0.5; }
-        .check-box {
-            width: 22px; height: 22px; border: 2px solid var(--col-text-soft); border-radius: 6px;
-            margin-right: 12px; cursor: pointer; display: grid; place-items: center; color: white;
-        }
-        .check-box.checked { background: var(--col-fin); border-color: var(--col-fin); }
-
-        /* --- FAB (Floating Action Button) --- */
-        .fab-container { position: fixed; bottom: 30px; right: 30px; display: flex; flex-direction: column; gap: 15px; align-items: flex-end; z-index: 100; }
-        .fab-main {
-            width: 60px; height: 60px; border-radius: 20px; background: var(--col-text); color: var(--col-bg);
-            font-size: 1.5rem; display: grid; place-items: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            cursor: pointer; transition: transform 0.2s;
-        }
-        .fab-main:active { transform: scale(0.9); }
+        .nav-item i { font-size: 1.4rem; margin-bottom:2px; }
+        .nav-item.active { color: var(--col-text); font-weight: 800; transform: translateY(-2px); }
         
-        .fab-opt {
-            background: var(--col-card); padding: 10px 20px; border-radius: 12px; box-shadow: var(--shadow);
-            font-weight: bold; cursor: pointer; transform: translateX(100px); opacity: 0; transition: 0.3s;
-            display: flex; align-items: center; gap: 10px; pointer-events: none;
+        /* Home Center Button */
+        .nav-home { 
+            width: 65px; height: 65px; background: var(--col-text); border-radius: 50%; 
+            color: var(--bg-body); display: grid; place-items: center; font-size: 1.8rem; 
+            transform: translateY(-25px); border: 6px solid var(--bg-body); 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15); transition: 0.2s;
         }
-        .fab-container.open .fab-opt { transform: translateX(0); opacity: 1; pointer-events: all; }
+        .nav-home:active { transform: translateY(-20px) scale(0.95); }
 
-        /* --- MODALS --- */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6); backdrop-filter: blur(8px);
-            z-index: 200; display: none; place-items: center;
-        }
-        .modal {
-            background: var(--col-card); width: 90%; max-width: 450px; padding: 30px;
-            border-radius: var(--radius); box-shadow: var(--shadow); animation: popUp 0.3s;
-            max-height: 90vh; overflow-y: auto;
-        }
-        @keyframes popUp { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        /* --- MODALS & SELECTORS --- */
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 200; display: none; align-items: flex-end; }
+        .sheet { background: var(--bg-card); width: 100%; border-radius: 30px 30px 0 0; padding: 30px 20px 40px 20px; animation: slideUp 0.3s; max-height: 90vh; overflow-y: auto; }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
-        input, select, textarea {
-            width: 100%; padding: 14px; margin: 8px 0; background: rgba(0,0,0,0.03);
-            border: 1px solid rgba(0,0,0,0.1); border-radius: 12px; color: var(--col-text);
-            font-size: 1rem; outline: none;
+        input, select { 
+            width: 100%; padding: 16px; margin-bottom: 12px; border-radius: 16px; 
+            border: 1px solid rgba(0,0,0,0.1); background: var(--bg-body); 
+            color: var(--col-text); font-size:1rem; outline:none;
         }
-        .btn-full { width: 100%; padding: 16px; border: none; border-radius: 16px; font-weight: bold; font-size: 1rem; cursor: pointer; margin-top: 15px; color: white; }
+        .btn { width: 100%; padding: 16px; border-radius: 16px; border: none; font-weight: bold; color: white; cursor: pointer; font-size:1rem; }
+
+        /* Multi Select Buttons */
+        .multi-select-row { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 15px; display: none; }
+        .ms-btn {
+            width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--col-soft);
+            display: grid; place-items: center; font-size: 0.8rem; color: var(--col-soft); cursor: pointer;
+        }
+        .ms-btn.active { background: var(--col-text); color: var(--bg-body); border-color: var(--col-text); font-weight: bold; }
         
-        /* Toast Notification */
-        .toast {
-            position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px);
-            background: var(--col-text); color: var(--col-bg); padding: 12px 24px; border-radius: 30px;
-            font-weight: bold; z-index: 300; transition: 0.5s; box-shadow: 0 5px 20px rgba(0,0,0,0.2);
-        }
-        .toast.show { transform: translateX(-50%) translateY(0); }
+        .fab { position: fixed; bottom: 110px; right: 20px; width: 55px; height: 55px; border-radius: 50%; display: grid; place-items: center; color: white; font-size: 1.4rem; box-shadow: 0 8px 20px rgba(0,0,0,0.25); z-index: 90; cursor: pointer; }
 
     </style>
 </head>
-<body>
-
-    <div class="ambient"></div>
-
-    <!-- TOAST -->
-    <div id="toast" class="toast"><i class="fas fa-check-circle"></i> Azione completata</div>
+<body data-theme="light">
 
     <!-- 1. HOME VIEW -->
     <div id="view-home" class="view active">
         <div class="header">
-            <div class="brand"><i class="fas fa-fingerprint"></i> MYDAVIDE</div>
-            <div class="btn-icon" onclick="resetApp()"><i class="fas fa-power-off"></i></div>
+            <div class="title">MyDavide</div>
+            <div class="btn-icon" onclick="toggleTheme()"><i class="fas fa-moon"></i></div>
         </div>
 
-        <div class="grid">
-            <!-- Welcome Card -->
-            <div class="card w-welcome">
-                <div class="weather-badge"><i class="fas fa-sun"></i> 22°C Soleggiato</div>
-                <h1 id="greeting">Buongiorno, Davide</h1>
-                <p style="opacity: 0.9" id="date-display">Caricamento data...</p>
+        <!-- Smart Banner: Link to Calendar -->
+        <div class="smart-banner" onclick="navTo('cal')">
+            <div id="banner-content">
+                <div style="opacity:0.8; font-size:0.9rem; margin-bottom:5px" id="banner-sub">OGGI</div>
+                <h2 id="banner-main">Caricamento...</h2>
+                <div style="font-size:0.9rem; margin-top:5px" id="banner-extra">...</div>
             </div>
+            <div style="position:absolute; bottom:15px; right:15px; font-size:2rem; opacity:0.2"><i class="fas fa-calendar-alt"></i></div>
+        </div>
 
-            <!-- Quick Stats -->
-            <div class="card" onclick="navTo('todo')" style="cursor:pointer">
-                <h3 style="color:var(--col-task)"><i class="fas fa-check-square"></i> Oggi</h3>
-                <div style="font-size: 2rem; font-weight: 800; margin: 10px 0;" id="home-task-count">0</div>
-                <p style="font-size:0.9rem; color:var(--col-text-soft)">Attività rimanenti</p>
+        <!-- Widget: Portafoglio -->
+        <div class="widget" onclick="navTo('fin')">
+            <div class="widget-head">
+                <div class="widget-title" style="color:var(--col-fin)"><i class="fas fa-wallet"></i> PORTAFOGLIO</div>
+                <i class="fas fa-chevron-right" style="opacity:0.3"></i>
             </div>
-
-            <div class="card" onclick="navTo('finance')" style="cursor:pointer">
-                <h3 style="color:var(--col-fin)"><i class="fas fa-wallet"></i> Saldo</h3>
-                <div style="font-size: 2rem; font-weight: 800; margin: 10px 0;" id="home-balance">€0.00</div>
-                <p style="font-size:0.9rem; color:var(--col-text-soft)">Clicca per dettagli</p>
+            <div class="big-balance" id="home-bal">€0.00</div>
+            <div style="height:100px; width:100%; margin-top:10px;">
+                <canvas id="homeFinChart"></canvas>
             </div>
+        </div>
 
-            <!-- Quick Note -->
-            <div class="card">
-                <h3 style="color:var(--col-note)"><i class="fas fa-sticky-note"></i> Note Rapide</h3>
-                <textarea class="note-area" id="quick-note" placeholder="Scrivi qui qualcosa al volo..." oninput="saveNote()"></textarea>
+        <!-- Widget: Idratazione -->
+        <div class="widget">
+            <div class="widget-head">
+                <div class="widget-title" style="color:#3b82f6"><i class="fas fa-tint"></i> IDRATAZIONE</div>
+                <span style="font-weight:bold" id="water-text">0/8</span>
             </div>
+            <div class="water-grid" id="water-grid"></div>
+            <div style="height:6px; background:rgba(0,0,0,0.05); border-radius:3px; overflow:hidden">
+                <div id="water-bar" style="height:100%; width:0%; background:#3b82f6; transition:width 0.3s"></div>
+            </div>
+        </div>
 
-            <!-- Calendar Preview -->
-            <div class="card" onclick="navTo('calendar')" style="cursor:pointer; grid-column: 1 / -1;">
-                <h3 style="color:var(--col-evt); margin-bottom:10px"><i class="fas fa-calendar-day"></i> Prossimi Eventi</h3>
-                <div id="home-events-list">
-                    <!-- Events Injected JS -->
+        <!-- Widget: Attività -->
+        <div class="widget" onclick="navTo('todo')">
+            <div class="widget-head">
+                <div class="widget-title" style="color:var(--col-task)"><i class="fas fa-check-circle"></i> ATTIVITÀ</div>
+                <span id="task-pct">0%</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:15px">
+                <div style="width:80px; height:80px"><canvas id="homeTaskChart"></canvas></div>
+                <div style="flex:1; font-size:0.9rem; color:var(--col-soft)" id="home-task-desc">
+                    Nessun task in sospeso.
                 </div>
             </div>
         </div>
     </div>
 
     <!-- 2. CALENDAR VIEW -->
-    <div id="view-calendar" class="view">
-        <div class="header">
-            <div class="btn-icon" onclick="navTo('home')"><i class="fas fa-arrow-left"></i></div>
-            <div class="brand">Agenda</div>
-            <div class="btn-icon" onclick="currentDate.setMonth(currentDate.getMonth()+1); renderCalendar()"><i class="fas fa-chevron-right"></i></div>
-        </div>
-
-        <div class="cal-header">
-            <h2 id="cal-month-year">...</h2>
-            <div class="btn-icon" onclick="currentDate.setMonth(currentDate.getMonth()-1); renderCalendar()" style="width:35px; height:35px"><i class="fas fa-chevron-left"></i></div>
-        </div>
-
-        <div class="week-bar">
-            <div>L</div><div>M</div><div>M</div><div>G</div><div>V</div><div>S</div><div>D</div>
-        </div>
-        <div class="month-grid" id="cal-grid">
-            <!-- Grid JS -->
-        </div>
-
-        <div style="margin-top: 30px;">
-            <h3 style="margin-bottom: 15px;">In programma il <span id="sel-date-label">...</span></h3>
-            <div id="day-detail-list">
-                <p style="color:var(--col-text-soft)">Seleziona un giorno per vedere i dettagli.</p>
+    <div id="view-cal" class="view">
+        <div class="header"><div class="title">Agenda</div> <div class="btn-icon" onclick="setToday()"><i class="fas fa-calendar-day"></i></div></div>
+        
+        <div class="widget">
+            <div class="cal-controls">
+                <i class="fas fa-chevron-left" onclick="changeMonth(-1)" style="padding:10px; cursor:pointer"></i>
+                <div class="cal-month-title" id="cal-month-label">...</div>
+                <i class="fas fa-chevron-right" onclick="changeMonth(1)" style="padding:10px; cursor:pointer"></i>
             </div>
+            
+            <div style="display:grid; grid-template-columns:repeat(7,1fr); text-align:center; font-size:0.7rem; color:var(--col-soft); margin-bottom:5px">
+                <div>L</div><div>M</div><div>M</div><div>G</div><div>V</div><div>S</div><div>D</div>
+            </div>
+            <div id="cal-grid" class="month-grid"></div>
         </div>
+
+        <h4 style="margin:20px 0 10px 5px">Impegni del Giorno</h4>
+        <div id="cal-day-list" style="padding-bottom:80px"></div>
+
+        <div class="fab" style="background:var(--col-cal)" onclick="openModal('modal-evt')"><i class="fas fa-plus"></i></div>
     </div>
 
     <!-- 3. FINANCE VIEW -->
-    <div id="view-finance" class="view">
-        <div class="header">
-            <div class="btn-icon" onclick="navTo('home')"><i class="fas fa-arrow-left"></i></div>
-            <div class="brand">Finanze</div>
-            <div class="btn-icon" onclick="toggleSimMode()"><i class="fas fa-flask" id="sim-icon"></i></div>
-        </div>
+    <div id="view-fin" class="view">
+        <div class="header"><div class="title">Portafoglio</div></div>
 
-        <div class="card" style="text-align:center; margin-bottom:20px;">
-            <p style="font-size:0.9rem; color:var(--col-text-soft)" id="fin-label">Saldo Reale</p>
-            <h1 style="font-size:2.5rem; color:var(--col-fin)" id="fin-total">€0.00</h1>
+        <!-- 4 Widgets Grid -->
+        <div class="fin-grid">
+            <div class="widget" style="margin:0; padding:15px">
+                <small style="color:var(--col-soft)">Saldo</small>
+                <div style="font-size:1.4rem; font-weight:bold; color:var(--col-fin)" id="fin-bal-w">€0</div>
+            </div>
+            <div class="widget" style="margin:0; padding:15px">
+                <small style="color:var(--col-soft)">Mensile</small>
+                <div style="font-size:1.4rem; font-weight:bold" id="fin-month-w">€0</div>
+            </div>
+            <div class="widget" style="grid-column:span 2; height:200px">
+                <small style="color:var(--col-soft)">Entrate vs Uscite</small>
+                <div style="width:100%; height:150px"><canvas id="finBarChart"></canvas></div>
+            </div>
+            <div class="widget" style="grid-column:span 2; height:200px">
+                <small style="color:var(--col-soft)">Andamento Annuale</small>
+                <div style="width:100%; height:150px"><canvas id="finLineChart"></canvas></div>
+            </div>
         </div>
+        
+        <h4 style="margin:20px 0 10px 5px">Cronologia</h4>
+        <div id="fin-list" style="padding-bottom:80px"></div>
 
-        <!-- Categories Chart -->
-        <div class="card" style="height: 250px; margin-bottom:20px; align-items:center; justify-content:center;">
-            <canvas id="finChart"></canvas>
-        </div>
-
-        <h3>Transazioni Recenti</h3>
-        <div id="fin-list" style="margin-top:10px; padding-bottom:80px"></div>
+        <div class="fab" style="background:var(--col-fin)" onclick="openModal('modal-fin')"><i class="fas fa-plus"></i></div>
     </div>
 
-    <!-- 4. TO-DO VIEW -->
+    <!-- 4. TASKS VIEW -->
     <div id="view-todo" class="view">
         <div class="header">
-            <div class="btn-icon" onclick="navTo('home')"><i class="fas fa-arrow-left"></i></div>
-            <div class="brand">Attività</div>
-            <div class="btn-icon" onclick="clearCompleted()"><i class="fas fa-broom"></i></div>
+            <div class="title">Task & Liste</div>
+            <div class="btn-icon" onclick="openModal('modal-list')"><i class="fas fa-folder-plus"></i></div>
         </div>
 
-        <div class="card" style="background:var(--col-text); color:var(--col-bg); margin-bottom:20px">
-            <div style="display:flex; justify-content:space-between; align-items:center">
-                <h3><i class="fas fa-fire"></i> Focus Mode</h3>
-                <span id="timer-display" style="font-family:monospace; font-size:1.5rem">25:00</span>
+        <div id="todo-container" style="padding-bottom:80px"></div>
+
+        <div class="fab" style="background:var(--col-task)" onclick="openModal('modal-task')"><i class="fas fa-plus"></i></div>
+    </div>
+
+    <!-- 5. PROFILE / SETTINGS -->
+    <div id="view-set" class="view">
+        <div class="header"><div class="title">Profilo</div></div>
+        
+        <div class="widget">
+            <h4>Impostazioni Utente</h4>
+            <input type="text" id="user-name" placeholder="Il tuo nome" onchange="saveSet()" style="margin-top:10px">
+            <label>API Key (Opzionale per AI)</label>
+            <input type="password" id="user-key" onchange="saveSet()">
+        </div>
+
+        <div class="widget">
+            <h4>Gestione Dati</h4>
+            <button class="btn" style="background:var(--col-cal); margin-top:10px" onclick="exportData()">💾 Scarica Backup</button>
+            <div style="margin-top:10px; position:relative">
+                <button class="btn" style="background:var(--col-text)">📂 Carica Backup</button>
+                <input type="file" onchange="importData(this)" style="position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;cursor:pointer">
             </div>
-            <button onclick="toggleTimer()" class="btn-full" style="background:rgba(255,255,255,0.2); margin-top:10px">Avvia / Pausa</button>
+            <button class="btn" style="background:var(--col-task); margin-top:10px" onclick="resetApp()">⚠ Reset Totale</button>
         </div>
-
-        <div id="todo-list" style="padding-bottom:80px"></div>
     </div>
 
-    <!-- FLOATING ACTION BUTTON -->
-    <div class="fab-container" id="fab-menu">
-        <div class="fab-opt" onclick="openModal('modal-task')">
-            Nuova Attività <div class="btn-icon" style="background:var(--col-task); color:white"><i class="fas fa-check"></i></div>
-        </div>
-        <div class="fab-opt" onclick="openModal('modal-event')">
-            Nuovo Evento <div class="btn-icon" style="background:var(--col-evt); color:white"><i class="fas fa-calendar"></i></div>
-        </div>
-        <div class="fab-opt" onclick="openModal('modal-fin')">
-            Transazione <div class="btn-icon" style="background:var(--col-fin); color:white"><i class="fas fa-euro-sign"></i></div>
-        </div>
-        <div class="fab-main" onclick="toggleFab()"><i class="fas fa-plus"></i></div>
-    </div>
+    <!-- NAVIGATION BAR -->
+    <nav class="nav">
+        <div class="nav-item" onclick="navTo('cal')" id="n-cal"><i class="fas fa-calendar-alt"></i>Agenda</div>
+        <div class="nav-item" onclick="navTo('fin')" id="n-fin"><i class="fas fa-wallet"></i>Soldi</div>
+        
+        <div class="nav-home" onclick="navTo('home')"><i class="fas fa-home"></i></div>
 
-    <!-- MODAL EVENTO (BLU) -->
-    <div id="modal-event" class="modal-overlay" onclick="closeModal(event, 'modal-event')">
-        <div class="modal">
-            <h2 style="color:var(--col-evt)">Nuovo Evento</h2>
-            <p style="font-size:0.9rem; color:var(--col-text-soft)">Qualcosa a cui partecipare</p>
-            
-            <input type="text" id="evt-title" placeholder="Titolo Evento (es. Cena Fuori)">
-            <input type="text" id="evt-loc" placeholder="Luogo (es. Ristorante Roma)">
-            
+        <div class="nav-item" onclick="navTo('todo')" id="n-todo"><i class="fas fa-check-square"></i>Task</div>
+        <div class="nav-item" onclick="navTo('set')" id="n-set"><i class="fas fa-user-circle"></i>Profilo</div>
+    </nav>
+
+    <!-- MODALS -->
+
+    <!-- Modal EVENTO -->
+    <div id="modal-evt" class="modal" onclick="closeModal(event, 'modal-evt')">
+        <div class="sheet">
+            <h3 style="color:var(--col-cal)">Nuovo Evento</h3>
+            <input type="text" id="evt-title" placeholder="Titolo">
             <div style="display:flex; gap:10px">
-                <input type="date" id="evt-date">
-                <input type="time" id="evt-time">
+                <div style="flex:1"><label>Inizio</label><input type="time" id="evt-start"></div>
+                <div style="flex:1"><label>Fine</label><input type="time" id="evt-end"></div>
             </div>
-
-            <label style="font-size:0.9rem; font-weight:bold; margin-top:10px; display:block">Ripetizione (Giorni):</label>
-            <div class="day-selector" id="evt-days">
-                <div class="ds-btn" onclick="toggleDay(this, 1)">L</div>
-                <div class="ds-btn" onclick="toggleDay(this, 2)">M</div>
-                <div class="ds-btn" onclick="toggleDay(this, 3)">M</div>
-                <div class="ds-btn" onclick="toggleDay(this, 4)">G</div>
-                <div class="ds-btn" onclick="toggleDay(this, 5)">V</div>
-                <div class="ds-btn" onclick="toggleDay(this, 6)">S</div>
-                <div class="ds-btn" onclick="toggleDay(this, 0)">D</div>
-            </div>
-
-            <button class="btn-full" style="background:var(--col-evt)" onclick="saveEvent()">Crea Evento</button>
-        </div>
-    </div>
-
-    <!-- MODAL TASK (ROSSO) -->
-    <div id="modal-task" class="modal-overlay" onclick="closeModal(event, 'modal-task')">
-        <div class="modal">
-            <h2 style="color:var(--col-task)">Nuova Attività</h2>
-            <p style="font-size:0.9rem; color:var(--col-text-soft)">Qualcosa da fare</p>
+            <label>Data</label><input type="date" id="evt-date">
             
-            <input type="text" id="tsk-title" placeholder="Cosa devi fare?">
-            <select id="tsk-prio">
-                <option value="normal">Priorità Normale</option>
-                <option value="high">🔥 Priorità Alta</option>
+            <label>Ricorrenza</label>
+            <select id="evt-recur" onchange="toggleRecurOptions('evt', this.value)">
+                <option value="none">Singola</option>
+                <option value="weekly">Giorni Settimana</option>
+                <option value="monthly">Mesi Specifici</option>
             </select>
-
-            <label style="font-size:0.9rem; font-weight:bold; margin-top:10px; display:block">Ripetizione (es. Palestra):</label>
-            <div class="day-selector" id="tsk-days">
-                <div class="ds-btn" onclick="toggleDay(this, 1)">L</div>
-                <div class="ds-btn" onclick="toggleDay(this, 2)">M</div>
-                <div class="ds-btn" onclick="toggleDay(this, 3)">M</div>
-                <div class="ds-btn" onclick="toggleDay(this, 4)">G</div>
-                <div class="ds-btn" onclick="toggleDay(this, 5)">V</div>
-                <div class="ds-btn" onclick="toggleDay(this, 6)">S</div>
-                <div class="ds-btn" onclick="toggleDay(this, 0)">D</div>
+            
+            <div id="evt-days" class="multi-select-row">
+                <!-- Days 1-7 -->
+                <div class="ms-btn" onclick="togBtn(this,1)">L</div><div class="ms-btn" onclick="togBtn(this,2)">M</div>
+                <div class="ms-btn" onclick="togBtn(this,3)">M</div><div class="ms-btn" onclick="togBtn(this,4)">G</div>
+                <div class="ms-btn" onclick="togBtn(this,5)">V</div><div class="ms-btn" onclick="togBtn(this,6)">S</div>
+                <div class="ms-btn" onclick="togBtn(this,0)">D</div>
+            </div>
+            <div id="evt-months" class="multi-select-row">
+                <!-- Months 0-11 -->
+                <div class="ms-btn" onclick="togBtn(this,0)">Gen</div><div class="ms-btn" onclick="togBtn(this,1)">Feb</div>
+                <div class="ms-btn" onclick="togBtn(this,2)">Mar</div><div class="ms-btn" onclick="togBtn(this,3)">Apr</div>
+                <div class="ms-btn" onclick="togBtn(this,4)">Mag</div><div class="ms-btn" onclick="togBtn(this,5)">Giu</div>
+                <div class="ms-btn" onclick="togBtn(this,6)">Lug</div><div class="ms-btn" onclick="togBtn(this,7)">Ago</div>
+                <div class="ms-btn" onclick="togBtn(this,8)">Set</div><div class="ms-btn" onclick="togBtn(this,9)">Ott</div>
+                <div class="ms-btn" onclick="togBtn(this,10)">Nov</div><div class="ms-btn" onclick="togBtn(this,11)">Dic</div>
             </div>
 
-            <button class="btn-full" style="background:var(--col-task)" onclick="saveTask()">Salva Task</button>
+            <button class="btn" style="background:var(--col-cal)" onclick="saveEvt()">Salva</button>
         </div>
     </div>
 
-    <!-- MODAL FINANZE (VERDE) -->
-    <div id="modal-fin" class="modal-overlay" onclick="closeModal(event, 'modal-fin')">
-        <div class="modal">
-            <h2 style="color:var(--col-fin)">Transazione</h2>
+    <!-- Modal FINANCE -->
+    <div id="modal-fin" class="modal" onclick="closeModal(event, 'modal-fin')">
+        <div class="sheet">
+            <h3 style="color:var(--col-fin)">Transazione</h3>
             <input type="text" id="fin-desc" placeholder="Descrizione">
-            <input type="number" id="fin-amount" placeholder="Importo (- per uscite)">
+            <input type="number" id="fin-amt" placeholder="Importo (- per uscite)">
+            <label>Data</label><input type="date" id="fin-date">
             
-            <select id="fin-cat">
-                <option value="Altro">Altro</option>
-                <option value="Cibo">🍔 Cibo / Spesa</option>
-                <option value="Trasporti">🚗 Trasporti</option>
-                <option value="Casa">🏠 Casa / Bollette</option>
-                <option value="Svago">🎉 Svago</option>
-                <option value="Stipendio">💰 Stipendio / Entrate</option>
+            <label>Ricorrenza</label>
+            <select id="fin-recur" onchange="toggleRecurOptions('fin', this.value)">
+                <option value="none">Singola</option>
+                <option value="monthly">Ogni Mese (Giorno fisso)</option>
+                <option value="custom_months">Mesi Specifici</option>
             </select>
-
-            <div style="margin:15px 0; display:flex; align-items:center; gap:10px">
-                <input type="checkbox" id="fin-sim" style="width:20px; height:20px">
-                <label for="fin-sim">Solo Simulazione (Non addebitare)</label>
+            
+            <div id="fin-months" class="multi-select-row">
+                 <div class="ms-btn" onclick="togBtn(this,0)">G</div><div class="ms-btn" onclick="togBtn(this,1)">F</div>
+                 <div class="ms-btn" onclick="togBtn(this,2)">M</div><div class="ms-btn" onclick="togBtn(this,3)">A</div>
+                 <div class="ms-btn" onclick="togBtn(this,4)">M</div><div class="ms-btn" onclick="togBtn(this,5)">G</div>
+                 <div class="ms-btn" onclick="togBtn(this,6)">L</div><div class="ms-btn" onclick="togBtn(this,7)">A</div>
+                 <div class="ms-btn" onclick="togBtn(this,8)">S</div><div class="ms-btn" onclick="togBtn(this,9)">O</div>
+                 <div class="ms-btn" onclick="togBtn(this,10)">N</div><div class="ms-btn" onclick="togBtn(this,11)">D</div>
             </div>
 
-            <button class="btn-full" style="background:var(--col-fin)" onclick="saveFinance()">Registra</button>
+            <button class="btn" style="background:var(--col-fin)" onclick="saveFin()">Registra</button>
+        </div>
+    </div>
+
+    <!-- Modal TASK -->
+    <div id="modal-task" class="modal" onclick="closeModal(event, 'modal-task')">
+        <div class="sheet">
+            <h3 style="color:var(--col-task)">Attività</h3>
+            <input id="task-title" placeholder="Cosa devi fare?">
+            <label>Lista</label>
+            <select id="task-list-sel"></select>
+            <label>Data (Opzionale)</label>
+            <input type="date" id="task-date">
+            
+            <label>Ricorrenza</label>
+            <select id="task-recur" onchange="toggleRecurOptions('task', this.value)">
+                <option value="none">Nessuna</option>
+                <option value="weekly">Giorni Settimana</option>
+            </select>
+            
+            <div id="task-days" class="multi-select-row">
+                <div class="ms-btn" onclick="togBtn(this,1)">L</div><div class="ms-btn" onclick="togBtn(this,2)">M</div>
+                <div class="ms-btn" onclick="togBtn(this,3)">M</div><div class="ms-btn" onclick="togBtn(this,4)">G</div>
+                <div class="ms-btn" onclick="togBtn(this,5)">V</div><div class="ms-btn" onclick="togBtn(this,6)">S</div>
+                <div class="ms-btn" onclick="togBtn(this,0)">D</div>
+            </div>
+            
+            <button class="btn" style="background:var(--col-task)" onclick="saveTask()">Aggiungi</button>
+        </div>
+    </div>
+
+    <!-- Modal NEW LIST -->
+    <div id="modal-list" class="modal" onclick="closeModal(event, 'modal-list')">
+        <div class="sheet">
+            <h3>Nuova Lista</h3>
+            <input id="list-name" placeholder="Nome Lista">
+            <input type="color" id="list-col" value="#ef4444" style="height:50px">
+            <button class="btn" style="background:var(--col-text)" onclick="saveList()">Crea</button>
         </div>
     </div>
 
     <script>
-        // --- DATA STRUCTURE ---
-        const defaultData = {
-            events: [], // { id, title, location, date, time, recur: [days] }
-            tasks: [],  // { id, title, priority, done, recur: [days] }
-            finance: [], // { id, desc, amount, category, date, isSim }
-            note: ""
+        // --- DATA & STATE ---
+        const defaultDB = {
+            events: [], // {id, title, date, start, end, recurType, recurVals:[]}
+            finance: [], // {id, desc, amt, date, recurType, recurVals:[]}
+            lists: [{id:'l1', name:'Generale', col:'#ef4444'}],
+            tasks: [], // {id, title, listId, date, done, recurType, recurVals:[]}
+            water: {count:0, date:''},
+            settings: {name:'Davide', theme:'light', aiKey:''}
         };
-
-        let db = JSON.parse(localStorage.getItem('myDavide_Ultimate')) || defaultData;
+        let db = JSON.parse(localStorage.getItem('MyDavide8')) || defaultDB;
         
-        let currentDate = new Date();
-        let selectedDate = new Date();
-        let simMode = false;
-        let chartInstance = null;
-        let timer = null; let timeLeft = 1500;
+        let curDate = new Date(); // Calendar view date
+        let selDate = new Date(); // Selected day
+        let charts = {};
+        
+        // Saint Database (Simple)
+        const saints = {
+            "1-1":"Maria Madre di Dio", "19-3":"San Giuseppe", "29-6":"Pietro e Paolo", "15-8":"Assunzione",
+            "1-11":"Tutti i Santi", "25-12":"Natale", "26-12":"Santo Stefano"
+        };
 
         // --- INIT ---
         document.addEventListener('DOMContentLoaded', () => {
-            updateGreeting();
-            document.getElementById('quick-note').value = db.note || "";
-            // Set date inputs to today
+            // Check day change
             const today = new Date().toISOString().split('T')[0];
-            document.getElementById('evt-date').value = today;
+            if(db.water.date !== today) { db.water.count=0; db.water.date=today; saveDB(); }
             
-            refreshUI();
+            // Apply Theme
+            document.body.setAttribute('data-theme', db.settings.theme);
+            document.getElementById('user-name').value = db.settings.name;
+            document.getElementById('user-key').value = db.settings.aiKey || '';
+
+            // Pre-fill dates
+            document.querySelectorAll('input[type="date"]').forEach(i => i.valueAsDate = new Date());
+
+            updateBanner();
+            renderAll();
         });
 
-        function saveDB() {
-            localStorage.setItem('myDavide_Ultimate', JSON.stringify(db));
-            refreshUI();
-        }
-
-        function refreshUI() {
+        function saveDB() { localStorage.setItem('MyDavide8', JSON.stringify(db)); }
+        function renderAll() {
             renderHome();
-            renderCalendar(); // Renders calendar + detail list
-            renderFinance();
+            renderCal();
+            renderFin();
             renderTodo();
         }
 
         // --- NAVIGATION ---
-        function navTo(viewId) {
+        function navTo(id) {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-            document.getElementById('view-' + viewId).classList.add('active');
-            if(document.getElementById('fab-menu').classList.contains('open')) toggleFab(); // close menu
-        }
-
-        function toggleFab() {
-            document.getElementById('fab-menu').classList.toggle('open');
-            const icon = document.querySelector('.fab-main i');
-            icon.classList.toggle('fa-plus');
-            icon.classList.toggle('fa-times');
-        }
-
-        function showToast(msg) {
-            const t = document.getElementById('toast');
-            t.innerHTML = `<i class="fas fa-check-circle"></i> ${msg}`;
-            t.classList.add('show');
-            setTimeout(() => t.classList.remove('show'), 3000);
+            document.querySelectorAll('.nav-item').forEach(v => v.classList.remove('active'));
+            document.getElementById('view-'+id).classList.add('active');
+            if(id !== 'home') document.getElementById('n-'+id).classList.add('active');
+            
+            if(id==='home') { renderHome(); }
+            if(id==='cal') { renderCal(); }
+            if(id==='fin') { renderFin(); }
+            if(id==='todo') { renderTodo(); }
         }
 
         // --- HOME LOGIC ---
-        function updateGreeting() {
-            const hr = new Date().getHours();
-            const el = document.getElementById('greeting');
-            if(hr < 12) el.innerText = "Buongiorno, Davide";
-            else if(hr < 18) el.innerText = "Buon Pomeriggio";
-            else el.innerText = "Buonasera, Davide";
-
-            const options = { weekday: 'long', day: 'numeric', month: 'long' };
-            document.getElementById('date-display').innerText = new Date().toLocaleDateString('it-IT', options);
-        }
-
-        function saveNote() {
-            db.note = document.getElementById('quick-note').value;
-            localStorage.setItem('myDavide_Ultimate', JSON.stringify(db)); // Silent save
+        function updateBanner() {
+            const today = new Date();
+            const dateStr = today.getDate()+'-'+(today.getMonth()+1);
+            const saint = saints[dateStr] || "San del Giorno";
+            
+            document.getElementById('banner-sub').innerText = today.toLocaleDateString('it-IT', {weekday:'long', day:'numeric', month:'long'}).toUpperCase();
+            document.getElementById('banner-main').innerText = saint;
+            
+            // Next event
+            const next = getAllEventsForDay(today).sort((a,b)=>a.time.localeCompare(b.time))[0];
+            document.getElementById('banner-extra').innerText = next ? `Prossimo: ${next.title} (${next.time})` : "Nessun impegno imminente";
         }
 
         function renderHome() {
-            // Task count
-            const pending = db.tasks.filter(t => !t.done).length;
-            document.getElementById('home-task-count').innerText = pending;
-            
+            // Water
+            const wg = document.getElementById('water-grid');
+            wg.innerHTML = '';
+            for(let i=0; i<8; i++) {
+                const g = document.createElement('div');
+                g.className = `glass ${i<db.water.count?'full':''}`;
+                g.onclick = () => {
+                    db.water.count = (i < db.water.count) ? i : i+1;
+                    saveDB(); 
+                    document.getElementById('water-text').innerText = `${db.water.count}/8`;
+                    renderHome();
+                };
+                wg.appendChild(g);
+            }
+            document.getElementById('water-text').innerText = `${db.water.count}/8`;
+            document.getElementById('water-bar').style.width = `${(db.water.count/8)*100}%`;
+
             // Balance
-            const bal = db.finance.filter(f => !f.isSim).reduce((a,b) => a + b.amount, 0);
-            document.getElementById('home-balance').innerText = `€${bal.toFixed(2)}`;
+            const bal = db.finance.reduce((a,b)=>a+b.amt,0);
+            document.getElementById('home-bal').innerText = `€${bal.toFixed(2)}`;
 
-            // Events List (Next 3)
-            const list = document.getElementById('home-events-list');
-            list.innerHTML = '';
-            
-            // Logic to find upcoming events (simple check for today/tomorrow)
-            // For simplicity in this view, we show general next items
-            const today = new Date();
-            let upcoming = getItemsForDay(today).slice(0,3);
-            
-            if(upcoming.length === 0) list.innerHTML = '<p style="opacity:0.6; font-size:0.9rem">Niente in programma oggi.</p>';
-            
-            upcoming.forEach(item => {
-                const div = document.createElement('div');
-                div.style.display = 'flex'; div.style.gap = '10px'; div.style.marginBottom = '10px'; div.style.alignItems='center';
-                div.innerHTML = `
-                    <div style="width:4px; height:30px; border-radius:2px; background:var(--col-${item.type === 'evt' ? 'evt' : 'task'})"></div>
-                    <div>
-                        <div style="font-weight:bold; font-size:0.9rem">${item.title}</div>
-                        <div style="font-size:0.8rem; opacity:0.7">${item.time || (item.type==='task'?'Attività':'Tutto il giorno')}</div>
-                    </div>
-                `;
-                list.appendChild(div);
+            // Task Pct
+            const tot = db.tasks.length;
+            const done = db.tasks.filter(t=>t.done).length;
+            const pct = tot===0?100:Math.round((done/tot)*100);
+            document.getElementById('task-pct').innerText = `${pct}%`;
+            document.getElementById('home-task-desc').innerText = pct===100 ? "Tutto completato!" : `${tot-done} attività rimanenti.`;
+
+            // Home Charts
+            renderHomeCharts(bal, done, tot-done);
+        }
+
+        function renderHomeCharts(bal, done, notDone) {
+            // Finance Line (Simple Mock Trend based on balance history)
+            const ctxF = document.getElementById('homeFinChart').getContext('2d');
+            if(charts.hf) charts.hf.destroy();
+            // Create data points
+            let run = 0;
+            const dataF = db.finance.slice(-10).map(f=>{ run+=f.amt; return run; });
+            charts.hf = new Chart(ctxF, {
+                type:'line',
+                data: { labels:dataF.map((_,i)=>i), datasets:[{data:dataF, borderColor:'#10b981', borderWidth:2, pointRadius:0, tension:0.4}] },
+                options:{plugins:{legend:false}, scales:{x:{display:false}, y:{display:false}}, maintainAspectRatio:false}
+            });
+
+            // Task Pie
+            const ctxT = document.getElementById('homeTaskChart').getContext('2d');
+            if(charts.ht) charts.ht.destroy();
+            charts.ht = new Chart(ctxT, {
+                type:'doughnut',
+                data:{labels:['Fatti','Da Fare'], datasets:[{data:[done,notDone], backgroundColor:['#10b981','#ef4444'], borderWidth:0}]},
+                options:{plugins:{legend:false}, maintainAspectRatio:false, cutout:'70%'}
             });
         }
 
-        // --- CALENDAR LOGIC (CORE) ---
-        function toggleDay(btn, dayIdx) {
-            btn.classList.toggle('active');
-        }
+        // --- AGENDA LOGIC (THE MASTER HUB) ---
+        function setToday() { curDate=new Date(); selDate=new Date(); renderCal(); }
+        function changeMonth(d) { curDate.setMonth(curDate.getMonth()+d); renderCal(); }
 
-        function getSelectedRecurrence(containerId) {
-            const container = document.getElementById(containerId);
-            const activeBtns = container.querySelectorAll('.ds-btn.active');
-            let days = [];
-            // Map the buttons back to index 0-6 (Dom-Sab)
-            // My buttons are ordered L M M G V S D. 
-            // The onclick passes 1,2,3,4,5,6,0 correctly.
-            activeBtns.forEach(btn => {
-                // I need to parse the onclick attribute or store data-val. 
-                // Hack: infer from text or just trust the toggle.
-                // Let's rely on the DOM order being consistent? No, risky.
-                // Better: re-read the onclick attr
-                const onclickVal = btn.getAttribute('onclick');
-                const val = parseInt(onclickVal.match(/\d/)[0]);
-                days.push(val);
-            });
-            return days.length > 0 ? days : null; // Null if no recurrence
-        }
+        // Core Function: Aggregate Everything
+        function getAllEventsForDay(date) {
+            const dStr = date.toISOString().split('T')[0];
+            const dayIdx = date.getDay(); 
+            const monthIdx = date.getMonth();
+            const dom = date.getDate(); // day of month
 
-        function getItemsForDay(date) {
-            const dayOfWeek = date.getDay(); // 0-6
-            const dateStr = date.toISOString().split('T')[0];
             let items = [];
 
             // 1. Events
             db.events.forEach(e => {
-                // Single date match OR Recurrence match
-                if(e.date === dateStr || (e.recur && e.recur.includes(dayOfWeek))) {
-                    items.push({...e, type: 'evt'});
-                }
+                let match = false;
+                if(e.recurType === 'none' && e.date === dStr) match=true;
+                if(e.recurType === 'weekly' && e.recurVals.includes(dayIdx)) match=true;
+                if(e.recurType === 'monthly' && e.recurVals.includes(monthIdx) && new Date(e.date).getDate() === dom) match=true;
+                
+                if(match) items.push({type:'evt', title:e.title, time:e.start, color:'var(--col-cal)', id:e.id});
             });
 
-            // 2. Tasks
+            // 2. Tasks (with date or recurrence)
             db.tasks.forEach(t => {
-                // Tasks don't usually have a single date in this DB structure unless specific, 
-                // but let's assume they appear if recurrent on this day
-                if(t.recur && t.recur.includes(dayOfWeek)) {
-                    items.push({...t, type: 'task'});
-                }
+                let match = false;
+                if(t.recurType === 'none' && t.date === dStr) match=true;
+                if(t.recurType === 'weekly' && t.recurVals.includes(dayIdx)) match=true;
+                
+                if(match) items.push({type:'task', title:t.title, time:'--', color:'var(--col-task)', id:t.id, done:t.done});
+            });
+
+            // 3. Finance (Recurring or dated)
+            db.finance.forEach(f => {
+                let match = false;
+                if(f.recurType === 'none' && f.date === dStr) match=true;
+                if(f.recurType === 'monthly' && new Date(f.date).getDate() === dom) match=true;
+                if(f.recurType === 'custom_months' && f.recurVals.includes(monthIdx) && new Date(f.date).getDate() === dom) match=true;
+
+                if(match) items.push({type:'fin', title:`${f.desc} (€${f.amt})`, time:'--', color:'var(--col-fin)', id:f.id});
             });
 
             return items;
         }
 
-        function renderCalendar() {
+        function renderCal() {
             const grid = document.getElementById('cal-grid');
             grid.innerHTML = '';
-            
-            const year = currentDate.getFullYear();
-            const month = currentDate.getMonth();
-            document.getElementById('cal-month-year').innerText = new Date(year, month).toLocaleString('it-IT', {month:'long', year:'numeric'});
+            document.getElementById('cal-month-label').innerText = curDate.toLocaleString('it-IT',{month:'long', year:'numeric'}).toUpperCase();
 
-            const firstDay = new Date(year, month, 1).getDay();
-            const adjFirst = firstDay === 0 ? 6 : firstDay - 1; // Start Mon
-            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const dim = new Date(curDate.getFullYear(), curDate.getMonth()+1, 0).getDate();
+            const fDay = new Date(curDate.getFullYear(), curDate.getMonth(), 1).getDay();
+            const pad = fDay===0?6:fDay-1;
 
-            // Padding
-            for(let i=0; i<adjFirst; i++) grid.appendChild(document.createElement('div'));
+            for(let i=0; i<pad; i++) grid.appendChild(document.createElement('div'));
 
-            // Days
-            for(let i=1; i<=daysInMonth; i++) {
+            for(let i=1; i<=dim; i++) {
                 const cell = document.createElement('div');
-                cell.className = 'day';
-                cell.innerText = i;
+                const loopD = new Date(curDate.getFullYear(), curDate.getMonth(), i);
+                const isToday = loopD.toISOString().split('T')[0] === new Date().toISOString().split('T')[0];
+                const isSel = loopD.toISOString().split('T')[0] === selDate.toISOString().split('T')[0];
                 
-                // Check current loop date
-                const loopDate = new Date(year, month, i);
-                const isToday = loopDate.toDateString() === new Date().toDateString();
-                if(isToday) cell.classList.add('today');
+                cell.className = `day-cell ${isToday?'today':''} ${isSel?'selected':''}`;
+                cell.innerHTML = `<span>${i}</span>`;
                 
-                // Check selection
-                if(loopDate.toDateString() === selectedDate.toDateString()) cell.classList.add('selected');
-
-                // Click event
-                cell.onclick = () => {
-                    selectedDate = loopDate;
-                    renderCalendar(); // Re-render to update selection border
-                };
-
                 // Dots
-                const items = getItemsForDay(loopDate);
-                const dotCont = document.createElement('div'); dotCont.className = 'dots';
-                items.forEach(item => {
-                    const d = document.createElement('div');
-                    d.className = `dot ${item.type}`;
-                    dotCont.appendChild(d);
-                });
-                cell.appendChild(dotCont);
+                const items = getAllEventsForDay(loopD);
+                if(items.length > 0) {
+                    const dr = document.createElement('div'); dr.className='dots-row';
+                    // Show max 3 dots colors
+                    const types = [...new Set(items.map(x=>x.color))].slice(0,3);
+                    types.forEach(c => {
+                        dr.innerHTML += `<div class="dot" style="background:${c}"></div>`;
+                    });
+                    cell.appendChild(dr);
+                }
+
+                cell.onclick = () => { selDate = loopD; renderCal(); };
                 grid.appendChild(cell);
             }
-
-            // Render Detail List for Selected Date
-            renderDayDetails();
+            renderDayList();
         }
 
-        function renderDayDetails() {
-            const list = document.getElementById('day-detail-list');
-            const label = document.getElementById('sel-date-label');
-            list.innerHTML = '';
+        function renderDayList() {
+            const l = document.getElementById('cal-day-list');
+            l.innerHTML = '';
+            const items = getAllEventsForDay(selDate);
             
-            label.innerText = selectedDate.toLocaleDateString('it-IT', {weekday:'long', day:'numeric'});
-            
-            const items = getItemsForDay(selectedDate);
-            
-            if(items.length === 0) {
-                list.innerHTML = '<p style="color:var(--col-text-soft)">Nessun impegno per questo giorno.</p>';
-                return;
-            }
+            if(items.length===0) l.innerHTML = `<p style="text-align:center; color:var(--col-soft); padding:20px">Nessun impegno.</p>`;
 
-            items.forEach(item => {
-                const el = document.createElement('div');
-                el.className = 'task-item';
-                if(item.type === 'task') el.style.borderLeftColor = 'var(--col-task)';
-                else el.style.borderLeftColor = 'var(--col-evt)';
-                
-                el.innerHTML = `
+            items.sort((a,b) => (a.time === '--' ? '24:00' : a.time).localeCompare(b.time === '--' ? '24:00' : b.time));
+
+            items.forEach(i => {
+                const row = document.createElement('div');
+                row.style.display='flex'; row.style.alignItems='center'; row.style.padding='15px'; row.style.background='var(--bg-card)'; row.style.marginBottom='10px'; row.style.borderRadius='15px'; row.style.borderLeft=`5px solid ${i.color}`;
+                row.innerHTML = `
                     <div style="flex:1">
-                        <div style="font-weight:bold">${item.title}</div>
-                        <div style="font-size:0.8rem; color:var(--col-text-soft)">
-                            ${item.type === 'evt' ? '<i class="fas fa-clock"></i> ' + (item.time || 'Tutto il giorno') : '<i class="fas fa-redo"></i> Task Ricorrente'}
-                            ${item.location ? ' • ' + item.location : ''}
-                        </div>
+                        <div style="font-weight:bold">${i.title}</div>
+                        <div style="font-size:0.8rem; opacity:0.6">${i.type==='evt' ? i.time : (i.type==='task'?'Attività':'Transazione')}</div>
                     </div>
-                    ${item.type === 'task' ? `<div class="check-box ${item.done?'checked':''}" onclick="toggleTask('${item.id}')"><i class="fas fa-check"></i></div>` : ''}
+                    ${i.type==='task' ? `<i class="fas fa-${i.done?'check-circle':'circle'}" onclick="toggleTaskInCal(${i.id})"></i>` : ''}
                 `;
-                list.appendChild(el);
+                l.appendChild(row);
+            });
+        }
+        function toggleTaskInCal(id) { const t=db.tasks.find(x=>x.id===id); if(t){t.done=!t.done; saveDB(); renderCal();} }
+
+        // --- FINANCE ---
+        function renderFin() {
+            const bal = db.finance.reduce((a,b)=>a+b.amt,0);
+            document.getElementById('fin-bal-w').innerText = `€${bal.toFixed(2)}`;
+            
+            // Month calc
+            const startM = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+            const mTrans = db.finance.filter(f => new Date(f.date) >= startM);
+            const mBal = mTrans.reduce((a,b)=>a+b.amt,0);
+            document.getElementById('fin-month-w').innerText = `${mBal>0?'+':''}€${mBal}`;
+
+            const list = document.getElementById('fin-list');
+            list.innerHTML = '';
+            // History
+            db.finance.slice().sort((a,b)=>new Date(b.date)-new Date(a.date)).forEach(f => {
+                const d = document.createElement('div');
+                d.style.display='flex'; d.style.justifyContent='space-between'; d.style.padding='15px'; d.style.borderBottom='1px solid #eee';
+                d.innerHTML = `
+                    <div><b>${f.desc}</b><div style="font-size:0.8rem; color:grey">${f.date} ${f.recurType!=='none'?'🔄':''}</div></div>
+                    <div style="font-weight:bold; color:${f.amt>0?'var(--col-fin)':'var(--col-task)'}">${f.amt}€</div>
+                `;
+                list.appendChild(d);
+            });
+
+            // Charts
+            renderFinCharts();
+        }
+
+        function renderFinCharts() {
+            const ctxB = document.getElementById('finBarChart').getContext('2d');
+            const ctxL = document.getElementById('finLineChart').getContext('2d');
+            if(charts.fb) charts.fb.destroy();
+            if(charts.fl) charts.fl.destroy();
+
+            // Bar (Inc vs Exp)
+            const inc = db.finance.filter(f=>f.amt>0).reduce((a,b)=>a+b.amt,0);
+            const exp = Math.abs(db.finance.filter(f=>f.amt<0).reduce((a,b)=>a+b.amt,0));
+            charts.fb = new Chart(ctxB, {
+                type:'bar', data:{labels:['Entrate','Uscite'], datasets:[{data:[inc,exp], backgroundColor:['#10b981','#ef4444']}]},
+                options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}}
+            });
+
+            // Line (Trend)
+            let r=0;
+            const data = db.finance.slice(-20).map(f=>{r+=f.amt; return r;});
+            charts.fl = new Chart(ctxL, {
+                type:'line', data:{labels:data.map((_,i)=>i), datasets:[{data:data, borderColor:'#3b82f6', tension:0.4}]},
+                options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{x:{display:false}}}
             });
         }
 
-        function saveEvent() {
-            const title = document.getElementById('evt-title').value;
-            const loc = document.getElementById('evt-loc').value;
-            const date = document.getElementById('evt-date').value;
-            const time = document.getElementById('evt-time').value;
-            const recur = getSelectedRecurrence('evt-days');
-
-            if(!title) return alert("Inserisci un titolo");
-
-            db.events.push({
-                id: Date.now().toString(),
-                title, location: loc, date, time, recur
+        // --- TASK ---
+        function renderTodo() {
+            const c = document.getElementById('todo-container');
+            c.innerHTML = '';
+            db.lists.forEach(l => {
+                const ts = db.tasks.filter(t=>t.listId===l.id);
+                const d = ts.filter(t=>t.done).length;
+                const p = ts.length===0?0:(d/ts.length)*100;
+                
+                const box = document.createElement('div');
+                box.className = 'widget'; box.style.borderLeft = `5px solid ${l.col}`;
+                box.innerHTML = `
+                    <div class="widget-head"><span>${l.name}</span> <span>${d}/${ts.length}</span></div>
+                    <div style="height:5px; background:#eee; border-radius:3px; margin-bottom:10px"><div style="height:100%; width:${p}%; background:${l.col}"></div></div>
+                `;
+                ts.forEach(t => {
+                    box.innerHTML += `
+                        <div style="display:flex; align-items:center; padding:10px 0; border-top:1px solid #eee">
+                            <i class="fas fa-${t.done?'check-circle':'circle'}" style="color:${t.done?l.col:'#ccc'}; font-size:1.2rem; cursor:pointer" onclick="togTask(${t.id})"></i>
+                            <span style="margin-left:10px; flex:1; text-decoration:${t.done?'line-through':''}">${t.title}</span>
+                            <i class="fas fa-trash" style="opacity:0.3; cursor:pointer" onclick="delTask(${t.id})"></i>
+                        </div>
+                    `;
+                });
+                c.appendChild(box);
             });
-            saveDB();
-            closeModal(null, 'modal-event');
-            showToast("Evento Creato");
+        }
+        function togTask(id) { const t=db.tasks.find(x=>x.id===id); t.done=!t.done; saveDB(); renderTodo(); }
+        function delTask(id) { db.tasks=db.tasks.filter(x=>x.id!==id); saveDB(); renderTodo(); }
+
+        // --- MANUAL SAVE LOGIC ---
+        // Helper to get selected values from multi-select buttons
+        function getVals(pid) {
+            const vals = [];
+            document.querySelectorAll(`#${pid} .ms-btn.active`).forEach(b => {
+                // Determine index from onclick attribute... hacky but works for single file
+                // Better: rely on loop index logic in HTML generation or data attr
+                // I used onclick="togBtn(this, X)". Let's parse it or rely on order.
+                // Let's assume order is consistent with rendering.
+                // Re-implementation: Let's use data attributes for robustness.
+            });
+            // Actually, let's just re-read the onclick attr since it's hardcoded
+            const btns = document.querySelectorAll(`#${pid} .ms-btn`);
+            btns.forEach((b, i) => {
+                if(b.classList.contains('active')) {
+                    // Extract value passed to toggle function
+                    const val = parseInt(b.getAttribute('onclick').match(/\d+/)[0]);
+                    vals.push(val);
+                }
+            });
+            return vals;
+        }
+
+        function togBtn(b) { b.classList.toggle('active'); }
+        function toggleRecurOptions(type, val) {
+            // Hide all
+            if(document.getElementById(`${type}-days`)) document.getElementById(`${type}-days`).style.display='none';
+            if(document.getElementById(`${type}-months`)) document.getElementById(`${type}-months`).style.display='none';
+            
+            if(val === 'weekly') document.getElementById(`${type}-days`).style.display='flex';
+            if(val === 'monthly' && type === 'evt') document.getElementById(`${type}-months`).style.display='flex'; // Actually usually monthly is day of month, but request said "select months"
+            if(val === 'custom_months' || (type==='evt' && val==='monthly')) document.getElementById(`${type}-months`).style.display='flex';
+        }
+
+        function saveEvt() {
+            const t=document.getElementById('evt-title').value;
+            const d=document.getElementById('evt-date').value;
+            const s=document.getElementById('evt-start').value;
+            const e=document.getElementById('evt-end').value;
+            const r=document.getElementById('evt-recur').value;
+            const days = getVals('evt-days');
+            const months = getVals('evt-months');
+
+            if(t&&d) {
+                db.events.push({id:Date.now(), title:t, date:d, start:s, end:e, recurType:r, recurVals: r==='weekly'?days:months});
+                saveDB(); closeModal(null,'modal-evt'); renderCal();
+            }
+        }
+
+        function saveFin() {
+            const desc = document.getElementById('fin-desc').value;
+            const amt = parseFloat(document.getElementById('fin-amt').value);
+            const d = document.getElementById('fin-date').value;
+            const r = document.getElementById('fin-recur').value;
+            const months = getVals('fin-months');
+
+            if(desc && amt) {
+                db.finance.push({id:Date.now(), desc, amt, date:d, recurType:r, recurVals:months});
+                saveDB(); closeModal(null,'modal-fin'); renderFin();
+            }
+        }
+
+        function saveList() {
+            const n = document.getElementById('list-name').value;
+            const c = document.getElementById('list-col').value;
+            if(n) { db.lists.push({id:Date.now(), name:n, col:c}); saveDB(); closeModal(null,'modal-list'); renderTodo(); updateTaskSelect(); }
         }
 
         function saveTask() {
-            const title = document.getElementById('tsk-title').value;
-            const prio = document.getElementById('tsk-prio').value;
-            const recur = getSelectedRecurrence('tsk-days'); // Can be null
+            const t = document.getElementById('task-title').value;
+            const l = document.getElementById('task-list-sel').value;
+            const d = document.getElementById('task-date').value;
+            const r = document.getElementById('task-recur').value;
+            const days = getVals('task-days');
 
-            if(!title) return alert("Titolo mancante");
-
-            db.tasks.push({
-                id: Date.now().toString(),
-                title, priority: prio, recur, done: false
-            });
-            saveDB();
-            closeModal(null, 'modal-task');
-            showToast("Attività Aggiunta");
-        }
-
-        // --- FINANCE LOGIC ---
-        function toggleSimMode() {
-            simMode = !simMode;
-            document.getElementById('sim-icon').style.color = simMode ? 'var(--col-fin)' : 'var(--col-text)';
-            document.getElementById('fin-label').innerText = simMode ? "Pronostico (Simulato)" : "Saldo Reale";
-            renderFinance();
-        }
-
-        function saveFinance() {
-            const desc = document.getElementById('fin-desc').value;
-            const amount = parseFloat(document.getElementById('fin-amount').value);
-            const cat = document.getElementById('fin-cat').value;
-            const isSim = document.getElementById('fin-sim').checked;
-
-            if(!desc || !amount) return alert("Dati mancanti");
-
-            db.finance.push({
-                id: Date.now().toString(),
-                desc, amount, category: cat, isSim, date: new Date().toISOString()
-            });
-            saveDB();
-            closeModal(null, 'modal-fin');
-            showToast("Transazione Registrata");
-        }
-
-        function renderFinance() {
-            const list = document.getElementById('fin-list');
-            list.innerHTML = '';
-            
-            // Filter logic
-            const txs = db.finance.filter(f => simMode ? true : !f.isSim); // If sim mode, show all, else show only real
-            
-            // Calculate total
-            const total = txs.reduce((a,b) => a + b.amount, 0);
-            document.getElementById('fin-total').innerText = `€${total.toFixed(2)}`;
-
-            // List
-            txs.slice().reverse().forEach(t => {
-                const div = document.createElement('div');
-                div.className = 'task-item';
-                div.innerHTML = `
-                    <div style="width:40px; height:40px; border-radius:10px; background:rgba(0,0,0,0.05); display:grid; place-items:center; font-size:1.2rem; margin-right:15px">
-                        ${getCatIcon(t.category)}
-                    </div>
-                    <div style="flex:1">
-                        <div style="font-weight:bold">${t.desc} ${t.isSim ? '<small>(Sim)</small>' : ''}</div>
-                        <div style="font-size:0.8rem; color:var(--col-text-soft)">${new Date(t.date).toLocaleDateString()}</div>
-                    </div>
-                    <div style="font-weight:bold; color:${t.amount>=0?'var(--col-fin)':'var(--col-task)'}">
-                        ${t.amount > 0 ? '+' : ''}${t.amount}€
-                    </div>
-                    <i class="fas fa-trash" style="margin-left:15px; opacity:0.3; cursor:pointer" onclick="deleteFin('${t.id}')"></i>
-                `;
-                list.appendChild(div);
-            });
-
-            // Chart (Expenses by Category)
-            const ctx = document.getElementById('finChart').getContext('2d');
-            if(chartInstance) chartInstance.destroy();
-
-            // Group expenses by category
-            const cats = {};
-            txs.forEach(t => {
-                if(t.amount < 0) {
-                    if(!cats[t.category]) cats[t.category] = 0;
-                    cats[t.category] += Math.abs(t.amount);
-                }
-            });
-
-            chartInstance = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: Object.keys(cats),
-                    datasets: [{
-                        data: Object.values(cats),
-                        backgroundColor: ['#ef4444', '#f59e0b', '#10b981', '#3b82f6', '#8b5cf6'],
-                        borderWidth: 0
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { position: 'right', labels: { boxWidth: 10 } } }
-                }
-            });
-        }
-
-        function getCatIcon(cat) {
-            const map = { 'Cibo': '🍔', 'Trasporti': '🚗', 'Casa': '🏠', 'Svago': '🎉', 'Stipendio': '💰' };
-            return map[cat] || '📄';
-        }
-
-        function deleteFin(id) {
-            db.finance = db.finance.filter(f => f.id !== id);
-            saveDB();
-        }
-
-        // --- TODO LOGIC ---
-        function renderTodo() {
-            const list = document.getElementById('todo-list');
-            list.innerHTML = '';
-            
-            db.tasks.sort((a,b) => a.done - b.done).forEach(t => {
-                const div = document.createElement('div');
-                div.className = `task-item ${t.priority === 'high' ? 'prio-high' : ''} ${t.done ? 'done' : ''}`;
-                div.innerHTML = `
-                    <div class="check-box ${t.done?'checked':''}" onclick="toggleTask('${t.id}')">
-                        <i class="fas fa-check"></i>
-                    </div>
-                    <div style="flex:1">
-                        <div style="font-weight:bold; text-decoration:${t.done?'line-through':''}">${t.title}</div>
-                        <div style="font-size:0.8rem; color:var(--col-text-soft)">
-                            ${t.recur ? 'Ogni: ' + mapDays(t.recur) : 'Singola'}
-                        </div>
-                    </div>
-                    <i class="fas fa-times" style="opacity:0.3; cursor:pointer" onclick="delTask('${t.id}')"></i>
-                `;
-                list.appendChild(div);
-            });
-        }
-
-        function mapDays(arr) {
-            const dNames = ['D','L','M','M','G','V','S'];
-            return arr.map(i => dNames[i]).join(', ');
-        }
-
-        function toggleTask(id) {
-            const t = db.tasks.find(x => x.id === id);
-            if(t) { t.done = !t.done; saveDB(); }
-        }
-
-        function delTask(id) {
-            if(confirm("Eliminare?")) {
-                db.tasks = db.tasks.filter(x => x.id !== id);
-                saveDB();
+            if(t && l) {
+                db.tasks.push({id:Date.now(), title:t, listId:l, date:d, done:false, recurType:r, recurVals:days});
+                saveDB(); closeModal(null,'modal-task'); renderTodo();
             }
         }
 
-        function clearCompleted() {
-            db.tasks = db.tasks.filter(t => !t.done);
+        function updateTaskSelect() {
+            const s = document.getElementById('task-list-sel');
+            s.innerHTML = '';
+            db.lists.forEach(l => {
+                s.innerHTML += `<option value="${l.id}">${l.name}</option>`;
+            });
+        }
+
+        // --- UI UTILS ---
+        function toggleTheme() {
+            db.settings.theme = db.settings.theme==='light'?'dark':'light';
+            document.body.setAttribute('data-theme', db.settings.theme);
             saveDB();
-            showToast("Pulizia completata");
         }
-
-        // Focus Timer
-        function toggleTimer() {
-            if(timer) {
-                clearInterval(timer); timer = null;
-            } else {
-                timer = setInterval(() => {
-                    timeLeft--;
-                    const m = Math.floor(timeLeft / 60);
-                    const s = timeLeft % 60;
-                    document.getElementById('timer-display').innerText = `${m}:${s<10?'0'+s:s}`;
-                    if(timeLeft <= 0) { clearInterval(timer); alert("Focus Terminato!"); timeLeft=1500; }
-                }, 1000);
-            }
-        }
-
-        // --- UTILS ---
         function openModal(id) { 
-            // Reset selectors
-            document.querySelectorAll('.ds-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(id).style.display = 'grid'; 
-            document.getElementById('fab-menu').classList.remove('open');
+            if(id === 'modal-task') updateTaskSelect();
+            document.getElementById(id).style.display='flex'; 
         }
-        function closeModal(e, id) { if(!e || e.target.id === id) document.getElementById(id).style.display = 'none'; }
+        function closeModal(e, id) { if(!e||e.target.id===id) document.getElementById(id).style.display='none'; }
         
-        function resetApp() {
-            if(confirm("⚠ CANCELLARE TUTTO?")) {
-                localStorage.removeItem('myDavide_Ultimate');
-                location.reload();
-            }
+        function saveSet() {
+            db.settings.name = document.getElementById('user-name').value;
+            db.settings.aiKey = document.getElementById('user-key').value;
+            saveDB();
         }
+        
+        function exportData() {
+            const a = document.createElement('a');
+            a.href = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db));
+            a.download = "MyDavide_Backup.json"; a.click();
+        }
+        function importData(el) {
+            const fr = new FileReader();
+            fr.onload = e => { db=JSON.parse(e.target.result); saveDB(); location.reload(); };
+            fr.readAsText(el.files[0]);
+        }
+        function resetApp() { if(confirm("Cancellare tutto?")) { localStorage.removeItem('MyDavide8'); location.reload(); } }
+
     </script>
 </body>
 </html>
