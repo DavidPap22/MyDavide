@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#ffffff">
-    <title>MYDAVIDE 8.0</title>
+    <title>MYDAVIDE 10.0</title>
     
     <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;900&display=swap" rel="stylesheet">
@@ -15,7 +15,6 @@
     <style>
         /* --- SYSTEM VARIABLES --- */
         :root {
-            /* Palette Richiesta */
             --col-fin: #10b981;   /* Verde */
             --col-cal: #2563eb;   /* Blu */
             --col-task: #ef4444;  /* Rosso */
@@ -24,141 +23,102 @@
             --bg-card: #ffffff;
             --col-text: #0f172a;
             --col-soft: #64748b;
-            --nav-bg: rgba(255, 255, 255, 0.95);
+            --nav-bg: rgba(255, 255, 255, 0.96);
             
             --radius: 24px;
-            --nav-h: 85px;
+            --nav-h: 90px;
             --shadow: 0 10px 40px -10px rgba(0,0,0,0.08);
-            
-            /* Transitions */
-            --trans: background 0.4s ease, color 0.4s ease, border-color 0.4s ease;
+            --trans: background 0.3s ease, color 0.3s ease;
         }
 
-        /* Dark Mode Optimized */
         [data-theme="dark"] {
-            --bg-body: #0f1115;
-            --bg-card: #1e222b;
-            --col-text: #f1f5f9;
-            --col-soft: #94a3b8;
-            --nav-bg: rgba(30, 34, 43, 0.95);
-            --shadow: 0 10px 40px -10px rgba(0,0,0,0.6);
+            --bg-body: #0f1115; --bg-card: #1e222b; --col-text: #f1f5f9; --col-soft: #94a3b8; --nav-bg: rgba(30, 34, 43, 0.96);
         }
 
         * { margin:0; padding:0; box-sizing:border-box; font-family:'DM Sans', sans-serif; -webkit-tap-highlight-color:transparent; }
         body { background:var(--bg-body); color:var(--col-text); height:100vh; overflow:hidden; transition: var(--trans); }
 
         /* --- LAYOUT --- */
-        .view { 
-            position:absolute; top:0; left:0; width:100%; height:100%; 
-            padding:20px 20px calc(var(--nav-h) + 20px) 20px; 
-            overflow-y:auto; display:none; opacity:0; transform:scale(0.98); 
-            transition: opacity 0.3s ease, transform 0.3s ease;
-        }
+        .view { position:absolute; top:0; left:0; width:100%; height:100%; padding:20px 20px calc(var(--nav-h) + 20px) 20px; overflow-y:auto; display:none; opacity:0; transform:scale(0.98); transition: opacity 0.3s, transform 0.3s; }
         .view.active { display:block; opacity:1; transform:scale(1); }
         .view::-webkit-scrollbar { display:none; }
 
         .header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; padding-top:10px; }
-        .title { font-size:1.8rem; font-weight:800; letter-spacing:-1px; }
-        .btn-icon { 
-            width:42px; height:42px; background:var(--bg-card); border-radius:50%; 
-            display:grid; place-items:center; box-shadow:var(--shadow); cursor:pointer; 
-            color:var(--col-text); transition: var(--trans);
-        }
+        .title { font-size:1.8rem; font-weight:900; letter-spacing:-1px; text-transform: uppercase; }
+        
+        /* Icone più grandi come richiesto */
+        .btn-icon { width:50px; height:50px; font-size:1.3rem; background:var(--bg-card); border-radius:50%; display:grid; place-items:center; box-shadow:var(--shadow); cursor:pointer; color:var(--col-text); transition:0.2s; }
+        .btn-icon:active { transform:scale(0.9); }
 
-        /* WIDGET CARD STYLE */
-        .widget { 
-            background:var(--bg-card); border-radius:var(--radius); padding:20px; 
-            margin-bottom:15px; box-shadow:var(--shadow); position:relative; overflow:hidden;
-            transition: var(--trans);
-        }
+        .widget { background:var(--bg-card); border-radius:var(--radius); padding:20px; margin-bottom:15px; box-shadow:var(--shadow); position:relative; overflow:hidden; }
         .widget-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
-        .widget-title { font-weight:700; display:flex; align-items:center; gap:8px; }
+        .widget-title { font-weight:700; display:flex; align-items:center; gap:8px; font-size:1.1rem; }
 
         /* --- HOME --- */
         .smart-banner {
             background: linear-gradient(135deg, var(--col-cal), #60a5fa); color: white;
-            padding: 25px; border-radius: var(--radius); min-height: 120px;
+            padding: 25px; border-radius: var(--radius); min-height: 130px;
             display: flex; flex-direction: column; justify-content: center; position: relative;
             cursor: pointer; overflow: hidden; box-shadow: 0 10px 20px -5px rgba(37, 99, 235, 0.4);
         }
-        
+
+        .ai-widget {
+            background: linear-gradient(135deg, #8b5cf6, #d946ef); color: white;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 20px; border-radius: var(--radius); margin-bottom: 15px; cursor: pointer;
+            box-shadow: 0 10px 20px -5px rgba(139, 92, 246, 0.4);
+        }
+
         /* Water */
-        .water-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 15px 0; }
-        .glass {
-            height: 45px; background: var(--bg-body); border-radius: 8px 8px 15px 15px;
-            position: relative; overflow: hidden; cursor: pointer; border: 2px solid rgba(0,0,0,0.05);
-        }
-        .glass::after {
-            content:''; position: absolute; bottom:0; left:0; width:100%; height:0%;
-            background: #3b82f6; transition: height 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
+        .water-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 15px 0; }
+        .glass { height: 50px; background: var(--bg-body); border-radius: 8px 8px 15px 15px; position: relative; overflow: hidden; cursor: pointer; border: 2px solid rgba(0,0,0,0.05); }
+        .glass::after { content:''; position: absolute; bottom:0; left:0; width:100%; height:0%; background: #3b82f6; transition: height 0.4s; }
         .glass.full::after { height: 100%; }
 
-        /* --- AGENDA & CALENDAR --- */
+        /* Notes Post-it Style */
+        .note-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
+        .note-card { background: #fef3c7; color: #78350f; padding: 15px; border-radius: 15px; font-size: 0.9rem; position: relative; animation: popUp 0.3s; min-height: 80px; box-shadow: 2px 4px 10px rgba(0,0,0,0.05); }
+        .note-del { position: absolute; top: 5px; right: 8px; cursor: pointer; opacity: 0.4; font-size: 1.1rem; }
+
+        /* --- AGENDA --- */
         .cal-controls { display: flex; justify-content: space-between; margin-bottom: 15px; align-items: center; background:var(--bg-card); padding:5px; border-radius:15px; }
-        .cal-month-title { font-weight:bold; color:var(--col-cal); }
-        
         .month-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; }
-        .day-cell { 
-            aspect-ratio:1; border-radius: 12px; font-size: 0.85rem; 
-            padding: 2px; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content:center;
-            border: 1px solid transparent; position: relative;
-        }
+        .day-cell { aspect-ratio:1; border-radius: 14px; font-size: 0.85rem; padding: 2px; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content:center; border: 1px solid transparent; }
         .day-cell.today { background: var(--col-cal); color: white; font-weight: bold; }
         .day-cell.selected { border: 2px solid var(--col-cal); }
         .dots-row { display:flex; gap:3px; margin-top:2px; }
         .dot { width:5px; height:5px; border-radius:50%; }
 
-        /* --- FINANCE WIDGETS --- */
-        .fin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .big-balance { font-size: 2.5rem; font-weight: 900; color: var(--col-fin); letter-spacing: -1px; }
-
         /* --- NAV BOTTOM --- */
-        .nav { 
-            position: fixed; bottom: 0; left: 0; width: 100%; height: var(--nav-h); 
-            background: var(--nav-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            display: flex; justify-content: space-between; align-items: center; 
-            border-top: 1px solid rgba(0,0,0,0.05); z-index: 100; padding: 0 15px;
-        }
-        .nav-item { 
-            display: flex; flex-direction: column; align-items: center; gap: 5px; 
-            font-size: 0.65rem; color: var(--col-soft); cursor: pointer; width: 60px;
-            transition: 0.2s;
-        }
-        .nav-item i { font-size: 1.4rem; margin-bottom:2px; }
+        .nav { position: fixed; bottom: 0; left: 0; width: 100%; height: var(--nav-h); background: var(--nav-bg); backdrop-filter: blur(20px); display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(0,0,0,0.05); z-index: 100; padding: 0 15px; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 0.7rem; color: var(--col-soft); cursor: pointer; width: 60px; }
+        .nav-item i { font-size: 1.6rem; margin-bottom: 2px; }
         .nav-item.active { color: var(--col-text); font-weight: 800; transform: translateY(-2px); }
-        
-        /* Home Center Button */
-        .nav-home { 
-            width: 65px; height: 65px; background: var(--col-text); border-radius: 50%; 
-            color: var(--bg-body); display: grid; place-items: center; font-size: 1.8rem; 
-            transform: translateY(-25px); border: 6px solid var(--bg-body); 
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15); transition: 0.2s;
-        }
-        .nav-home:active { transform: translateY(-20px) scale(0.95); }
+        .nav-home { width: 70px; height: 70px; background: var(--col-text); border-radius: 50%; color: var(--bg-body); display: grid; place-items: center; font-size: 2rem; transform: translateY(-30px); border: 6px solid var(--bg-body); box-shadow: 0 10px 25px rgba(0,0,0,0.15); transition: 0.2s; }
+        .nav-home:active { transform: translateY(-25px) scale(0.95); }
 
-        /* --- MODALS & SELECTORS --- */
+        /* --- MODALS --- */
         .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 200; display: none; align-items: flex-end; }
         .sheet { background: var(--bg-card); width: 100%; border-radius: 30px 30px 0 0; padding: 30px 20px 40px 20px; animation: slideUp 0.3s; max-height: 90vh; overflow-y: auto; }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        @keyframes popUp { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
-        input, select { 
-            width: 100%; padding: 16px; margin-bottom: 12px; border-radius: 16px; 
-            border: 1px solid rgba(0,0,0,0.1); background: var(--bg-body); 
-            color: var(--col-text); font-size:1rem; outline:none;
-        }
+        input, select { width: 100%; padding: 16px; margin-bottom: 12px; border-radius: 16px; border: 1px solid rgba(0,0,0,0.1); background: var(--bg-body); color: var(--col-text); font-size:1rem; outline:none; }
         .btn { width: 100%; padding: 16px; border-radius: 16px; border: none; font-weight: bold; color: white; cursor: pointer; font-size:1rem; }
-
-        /* Multi Select Buttons */
+        
+        /* Selectors */
         .multi-select-row { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 15px; display: none; }
-        .ms-btn {
-            width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--col-soft);
-            display: grid; place-items: center; font-size: 0.8rem; color: var(--col-soft); cursor: pointer;
-        }
+        .ms-btn { width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--col-soft); display: grid; place-items: center; font-size: 0.8rem; color: var(--col-soft); cursor: pointer; }
         .ms-btn.active { background: var(--col-text); color: var(--bg-body); border-color: var(--col-text); font-weight: bold; }
         
-        .fab { position: fixed; bottom: 110px; right: 20px; width: 55px; height: 55px; border-radius: 50%; display: grid; place-items: center; color: white; font-size: 1.4rem; box-shadow: 0 8px 20px rgba(0,0,0,0.25); z-index: 90; cursor: pointer; }
+        .fab { position: fixed; bottom: 120px; right: 20px; width: 60px; height: 60px; border-radius: 50%; display: grid; place-items: center; color: white; font-size: 1.6rem; box-shadow: 0 8px 20px rgba(0,0,0,0.25); z-index: 90; cursor: pointer; }
 
+        /* AI Chat */
+        .ai-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-card); z-index: 300; display: flex; flex-direction: column; transform: translateY(100%); transition: 0.3s; }
+        .ai-overlay.open { transform: translateY(0); }
+        .msg { padding: 10px 15px; border-radius: 15px; margin-bottom: 10px; max-width: 80%; }
+        .msg-user { background: var(--col-cal); color: white; align-self: flex-end; }
+        .msg-ai { background: var(--bg-body); align-self: flex-start; }
     </style>
 </head>
 <body data-theme="light">
@@ -166,18 +126,30 @@
     <!-- 1. HOME VIEW -->
     <div id="view-home" class="view active">
         <div class="header">
-            <div class="title">MyDavide</div>
+            <div class="title" id="app-logo">MYDAVIDE</div>
             <div class="btn-icon" onclick="toggleTheme()"><i class="fas fa-moon"></i></div>
         </div>
 
-        <!-- Smart Banner: Link to Calendar -->
+        <!-- Banner Smart (Agenda + Meteo + Data) -->
         <div class="smart-banner" onclick="navTo('cal')">
-            <div id="banner-content">
-                <div style="opacity:0.8; font-size:0.9rem; margin-bottom:5px" id="banner-sub">OGGI</div>
-                <h2 id="banner-main">Caricamento...</h2>
-                <div style="font-size:0.9rem; margin-top:5px" id="banner-extra">...</div>
+            <div style="display:flex; justify-content:space-between; align-items:flex-start">
+                <div>
+                    <div style="opacity:0.9; font-size:0.9rem; font-weight:bold" id="banner-date">OGGI</div>
+                    <div style="font-size:2.5rem; font-weight:bold" id="w-temp">--°</div>
+                    <div style="font-size:0.9rem" id="w-desc">Ricerca Posizione...</div>
+                </div>
+                <div style="text-align:right">
+                    <div style="opacity:0.8; font-size:0.8rem">PROSSIMO EVENTO</div>
+                    <h3 id="next-evt-title" style="margin-top:5px">Nessuno</h3>
+                    <div id="next-evt-time" style="font-size:0.9rem; margin-top:2px">Relax</div>
+                </div>
             </div>
-            <div style="position:absolute; bottom:15px; right:15px; font-size:2rem; opacity:0.2"><i class="fas fa-calendar-alt"></i></div>
+        </div>
+
+        <!-- Widget AI Chat -->
+        <div class="ai-widget" onclick="openAI()">
+            <div style="font-weight:bold; font-size:1.1rem"><i class="fas fa-robot"></i> &nbsp;Parla con l'AI</div>
+            <i class="fas fa-chevron-right"></i>
         </div>
 
         <!-- Widget: Portafoglio -->
@@ -186,21 +158,9 @@
                 <div class="widget-title" style="color:var(--col-fin)"><i class="fas fa-wallet"></i> PORTAFOGLIO</div>
                 <i class="fas fa-chevron-right" style="opacity:0.3"></i>
             </div>
-            <div class="big-balance" id="home-bal">€0.00</div>
+            <div style="font-size: 2.8rem; font-weight: 900; color: var(--col-fin); letter-spacing: -1px;" id="home-bal">€0.00</div>
             <div style="height:100px; width:100%; margin-top:10px;">
                 <canvas id="homeFinChart"></canvas>
-            </div>
-        </div>
-
-        <!-- Widget: Idratazione -->
-        <div class="widget">
-            <div class="widget-head">
-                <div class="widget-title" style="color:#3b82f6"><i class="fas fa-tint"></i> IDRATAZIONE</div>
-                <span style="font-weight:bold" id="water-text">0/8</span>
-            </div>
-            <div class="water-grid" id="water-grid"></div>
-            <div style="height:6px; background:rgba(0,0,0,0.05); border-radius:3px; overflow:hidden">
-                <div id="water-bar" style="height:100%; width:0%; background:#3b82f6; transition:width 0.3s"></div>
             </div>
         </div>
 
@@ -213,9 +173,33 @@
             <div style="display:flex; align-items:center; gap:15px">
                 <div style="width:80px; height:80px"><canvas id="homeTaskChart"></canvas></div>
                 <div style="flex:1; font-size:0.9rem; color:var(--col-soft)" id="home-task-desc">
-                    Nessun task in sospeso.
+                    Nessun task.
                 </div>
             </div>
+        </div>
+
+        <!-- Widget: Idratazione (Spostato sotto Task) -->
+        <div class="widget">
+            <div class="widget-head">
+                <div class="widget-title" style="color:#3b82f6"><i class="fas fa-tint"></i> IDRATAZIONE</div>
+                <span style="font-weight:bold" id="water-text">0/8</span>
+            </div>
+            <div class="water-grid" id="water-grid"></div>
+            <div style="height:6px; background:rgba(0,0,0,0.05); border-radius:3px; overflow:hidden">
+                <div id="water-bar" style="height:100%; width:0%; background:#3b82f6; transition:width 0.3s"></div>
+            </div>
+        </div>
+
+        <!-- Widget: Note Rapide (In Fondo) -->
+        <div class="widget">
+            <div class="widget-head">
+                <div class="widget-title" style="color:#f59e0b"><i class="fas fa-sticky-note"></i> NOTE RAPIDE</div>
+            </div>
+            <div style="display:flex; gap:10px;">
+                <input id="note-in" placeholder="Scrivi una nota..." style="margin:0; flex:1">
+                <button onclick="addNote()" style="width:50px; background:#f59e0b; border:none; border-radius:12px; color:white; font-size:1.2rem"><i class="fas fa-plus"></i></button>
+            </div>
+            <div id="note-list" class="note-grid"></div>
         </div>
     </div>
 
@@ -225,9 +209,9 @@
         
         <div class="widget">
             <div class="cal-controls">
-                <i class="fas fa-chevron-left" onclick="changeMonth(-1)" style="padding:10px; cursor:pointer"></i>
-                <div class="cal-month-title" id="cal-month-label">...</div>
-                <i class="fas fa-chevron-right" onclick="changeMonth(1)" style="padding:10px; cursor:pointer"></i>
+                <i class="fas fa-chevron-left" onclick="changeMonth(-1)" style="padding:10px; cursor:pointer; font-size:1.2rem"></i>
+                <div style="font-weight:bold; color:var(--col-cal); font-size:1.1rem" id="cal-month-label">...</div>
+                <i class="fas fa-chevron-right" onclick="changeMonth(1)" style="padding:10px; cursor:pointer; font-size:1.2rem"></i>
             </div>
             
             <div style="display:grid; grid-template-columns:repeat(7,1fr); text-align:center; font-size:0.7rem; color:var(--col-soft); margin-bottom:5px">
@@ -237,7 +221,7 @@
         </div>
 
         <h4 style="margin:20px 0 10px 5px">Impegni del Giorno</h4>
-        <div id="cal-day-list" style="padding-bottom:80px"></div>
+        <div id="cal-day-list" style="padding-bottom:100px"></div>
 
         <div class="fab" style="background:var(--col-cal)" onclick="openModal('modal-evt')"><i class="fas fa-plus"></i></div>
     </div>
@@ -247,13 +231,13 @@
         <div class="header"><div class="title">Portafoglio</div></div>
 
         <!-- 4 Widgets Grid -->
-        <div class="fin-grid">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
             <div class="widget" style="margin:0; padding:15px">
-                <small style="color:var(--col-soft)">Saldo</small>
+                <small style="color:var(--col-soft)">Saldo Totale</small>
                 <div style="font-size:1.4rem; font-weight:bold; color:var(--col-fin)" id="fin-bal-w">€0</div>
             </div>
             <div class="widget" style="margin:0; padding:15px">
-                <small style="color:var(--col-soft)">Mensile</small>
+                <small style="color:var(--col-soft)">Questo Mese</small>
                 <div style="font-size:1.4rem; font-weight:bold" id="fin-month-w">€0</div>
             </div>
             <div class="widget" style="grid-column:span 2; height:200px">
@@ -267,7 +251,7 @@
         </div>
         
         <h4 style="margin:20px 0 10px 5px">Cronologia</h4>
-        <div id="fin-list" style="padding-bottom:80px"></div>
+        <div id="fin-list" style="padding-bottom:100px"></div>
 
         <div class="fab" style="background:var(--col-fin)" onclick="openModal('modal-fin')"><i class="fas fa-plus"></i></div>
     </div>
@@ -275,47 +259,63 @@
     <!-- 4. TASKS VIEW -->
     <div id="view-todo" class="view">
         <div class="header">
-            <div class="title">Task & Liste</div>
+            <div class="title">Attività</div>
             <div class="btn-icon" onclick="openModal('modal-list')"><i class="fas fa-folder-plus"></i></div>
         </div>
 
-        <div id="todo-container" style="padding-bottom:80px"></div>
+        <div id="todo-container" style="padding-bottom:100px"></div>
 
         <div class="fab" style="background:var(--col-task)" onclick="openModal('modal-task')"><i class="fas fa-plus"></i></div>
     </div>
 
-    <!-- 5. PROFILE / SETTINGS -->
+    <!-- 5. PROFILE -->
     <div id="view-set" class="view">
         <div class="header"><div class="title">Profilo</div></div>
         
         <div class="widget">
             <h4>Impostazioni Utente</h4>
-            <input type="text" id="user-name" placeholder="Il tuo nome" onchange="saveSet()" style="margin-top:10px">
-            <label>API Key (Opzionale per AI)</label>
-            <input type="password" id="user-key" onchange="saveSet()">
+            <input type="text" id="user-name" placeholder="Il tuo nome (es. Davide)" onchange="saveSet()" style="margin-top:10px">
+            <label>API Key (AI Google Gemini)</label>
+            <input type="password" id="user-key" onchange="saveSet()" placeholder="Incolla API Key qui...">
         </div>
 
         <div class="widget">
-            <h4>Gestione Dati</h4>
-            <button class="btn" style="background:var(--col-cal); margin-top:10px" onclick="exportData()">💾 Scarica Backup</button>
-            <div style="margin-top:10px; position:relative">
-                <button class="btn" style="background:var(--col-text)">📂 Carica Backup</button>
-                <input type="file" onchange="importData(this)" style="position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;cursor:pointer">
+            <h4>Gestione Dati Avanzata</h4>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:10px">
+                <button class="btn" style="background:var(--col-cal)" onclick="exportData()">💾 Backup</button>
+                <div style="position:relative">
+                     <button class="btn" style="background:var(--col-text)">📂 Ripristina</button>
+                     <input type="file" onchange="importData(this)" style="position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;cursor:pointer">
+                </div>
             </div>
+            <button class="btn" style="background:var(--col-soft); margin-top:10px" onclick="exportCSV()">📊 Esporta CSV</button>
             <button class="btn" style="background:var(--col-task); margin-top:10px" onclick="resetApp()">⚠ Reset Totale</button>
         </div>
     </div>
 
-    <!-- NAVIGATION BAR -->
+    <!-- NAVIGATION -->
     <nav class="nav">
         <div class="nav-item" onclick="navTo('cal')" id="n-cal"><i class="fas fa-calendar-alt"></i>Agenda</div>
         <div class="nav-item" onclick="navTo('fin')" id="n-fin"><i class="fas fa-wallet"></i>Soldi</div>
-        
         <div class="nav-home" onclick="navTo('home')"><i class="fas fa-home"></i></div>
-
         <div class="nav-item" onclick="navTo('todo')" id="n-todo"><i class="fas fa-check-square"></i>Task</div>
         <div class="nav-item" onclick="navTo('set')" id="n-set"><i class="fas fa-user-circle"></i>Profilo</div>
     </nav>
+
+    <!-- AI OVERLAY -->
+    <div id="ai-view" class="ai-overlay">
+        <div class="header" style="padding:20px; border-bottom:1px solid #eee">
+            <div class="title"><i class="fas fa-robot"></i> Assistant</div>
+            <div class="btn-icon" onclick="closeAI()"><i class="fas fa-times"></i></div>
+        </div>
+        <div id="chat-box" style="flex:1; padding:20px; overflow-y:auto; display:flex; flex-direction:column; gap:10px">
+            <div class="msg msg-ai">Ciao! Come posso aiutarti?</div>
+        </div>
+        <div style="padding:15px; background:var(--bg-card); display:flex; gap:10px">
+            <input id="ai-in" placeholder="Messaggio..." style="margin:0" onkeypress="if(event.key==='Enter') sendAI()">
+            <button onclick="sendAI()" style="width:50px; background:var(--col-cal); border:none; border-radius:12px; color:white"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
 
     <!-- MODALS -->
 
@@ -333,19 +333,18 @@
             <label>Ricorrenza</label>
             <select id="evt-recur" onchange="toggleRecurOptions('evt', this.value)">
                 <option value="none">Singola</option>
-                <option value="weekly">Giorni Settimana</option>
-                <option value="monthly">Mesi Specifici</option>
+                <option value="weekly">Settimanale (Giorni)</option>
+                <option value="yearly">Annuale (Mesi)</option>
             </select>
             
+            <!-- Recurrence Selectors -->
             <div id="evt-days" class="multi-select-row">
-                <!-- Days 1-7 -->
                 <div class="ms-btn" onclick="togBtn(this,1)">L</div><div class="ms-btn" onclick="togBtn(this,2)">M</div>
                 <div class="ms-btn" onclick="togBtn(this,3)">M</div><div class="ms-btn" onclick="togBtn(this,4)">G</div>
                 <div class="ms-btn" onclick="togBtn(this,5)">V</div><div class="ms-btn" onclick="togBtn(this,6)">S</div>
                 <div class="ms-btn" onclick="togBtn(this,0)">D</div>
             </div>
             <div id="evt-months" class="multi-select-row">
-                <!-- Months 0-11 -->
                 <div class="ms-btn" onclick="togBtn(this,0)">Gen</div><div class="ms-btn" onclick="togBtn(this,1)">Feb</div>
                 <div class="ms-btn" onclick="togBtn(this,2)">Mar</div><div class="ms-btn" onclick="togBtn(this,3)">Apr</div>
                 <div class="ms-btn" onclick="togBtn(this,4)">Mag</div><div class="ms-btn" onclick="togBtn(this,5)">Giu</div>
@@ -369,12 +368,19 @@
             <label>Ricorrenza</label>
             <select id="fin-recur" onchange="toggleRecurOptions('fin', this.value)">
                 <option value="none">Singola</option>
-                <option value="monthly">Ogni Mese (Giorno fisso)</option>
-                <option value="custom_months">Mesi Specifici</option>
+                <option value="weekly">Settimanale (Giorni)</option>
+                <option value="monthly">Mensile (Data fissa)</option>
+                <option value="yearly">Annuale (Mesi)</option>
             </select>
             
+            <div id="fin-days" class="multi-select-row">
+                 <div class="ms-btn" onclick="togBtn(this,1)">L</div><div class="ms-btn" onclick="togBtn(this,2)">M</div>
+                 <div class="ms-btn" onclick="togBtn(this,3)">M</div><div class="ms-btn" onclick="togBtn(this,4)">G</div>
+                 <div class="ms-btn" onclick="togBtn(this,5)">V</div><div class="ms-btn" onclick="togBtn(this,6)">S</div>
+                 <div class="ms-btn" onclick="togBtn(this,0)">D</div>
+            </div>
             <div id="fin-months" class="multi-select-row">
-                 <div class="ms-btn" onclick="togBtn(this,0)">G</div><div class="ms-btn" onclick="togBtn(this,1)">F</div>
+                 <div class="ms-btn" onclick="togBtn(this,0)">Gen</div><div class="ms-btn" onclick="togBtn(this,1)">F</div>
                  <div class="ms-btn" onclick="togBtn(this,2)">M</div><div class="ms-btn" onclick="togBtn(this,3)">A</div>
                  <div class="ms-btn" onclick="togBtn(this,4)">M</div><div class="ms-btn" onclick="togBtn(this,5)">G</div>
                  <div class="ms-btn" onclick="togBtn(this,6)">L</div><div class="ms-btn" onclick="togBtn(this,7)">A</div>
@@ -398,8 +404,9 @@
             
             <label>Ricorrenza</label>
             <select id="task-recur" onchange="toggleRecurOptions('task', this.value)">
-                <option value="none">Nessuna</option>
-                <option value="weekly">Giorni Settimana</option>
+                <option value="none">Singola</option>
+                <option value="weekly">Settimanale (Giorni)</option>
+                <option value="yearly">Annuale (Mesi)</option>
             </select>
             
             <div id="task-days" class="multi-select-row">
@@ -407,6 +414,14 @@
                 <div class="ms-btn" onclick="togBtn(this,3)">M</div><div class="ms-btn" onclick="togBtn(this,4)">G</div>
                 <div class="ms-btn" onclick="togBtn(this,5)">V</div><div class="ms-btn" onclick="togBtn(this,6)">S</div>
                 <div class="ms-btn" onclick="togBtn(this,0)">D</div>
+            </div>
+            <div id="task-months" class="multi-select-row">
+                <div class="ms-btn" onclick="togBtn(this,0)">Gen</div><div class="ms-btn" onclick="togBtn(this,1)">F</div>
+                <div class="ms-btn" onclick="togBtn(this,2)">M</div><div class="ms-btn" onclick="togBtn(this,3)">A</div>
+                <div class="ms-btn" onclick="togBtn(this,4)">M</div><div class="ms-btn" onclick="togBtn(this,5)">G</div>
+                <div class="ms-btn" onclick="togBtn(this,6)">L</div><div class="ms-btn" onclick="togBtn(this,7)">A</div>
+                <div class="ms-btn" onclick="togBtn(this,8)">S</div><div class="ms-btn" onclick="togBtn(this,9)">O</div>
+                <div class="ms-btn" onclick="togBtn(this,10)">N</div><div class="ms-btn" onclick="togBtn(this,11)">D</div>
             </div>
             
             <button class="btn" style="background:var(--col-task)" onclick="saveTask()">Aggiungi</button>
@@ -426,44 +441,36 @@
     <script>
         // --- DATA & STATE ---
         const defaultDB = {
-            events: [], // {id, title, date, start, end, recurType, recurVals:[]}
-            finance: [], // {id, desc, amt, date, recurType, recurVals:[]}
+            events: [], 
+            finance: [], 
             lists: [{id:'l1', name:'Generale', col:'#ef4444'}],
-            tasks: [], // {id, title, listId, date, done, recurType, recurVals:[]}
+            tasks: [], 
+            notes: [],
             water: {count:0, date:''},
             settings: {name:'Davide', theme:'light', aiKey:''}
         };
-        let db = JSON.parse(localStorage.getItem('MyDavide8')) || defaultDB;
+        let db = JSON.parse(localStorage.getItem('MyDavide10')) || defaultDB;
         
-        let curDate = new Date(); // Calendar view date
-        let selDate = new Date(); // Selected day
+        let curDate = new Date();
+        let selDate = new Date();
         let charts = {};
-        
-        // Saint Database (Simple)
-        const saints = {
-            "1-1":"Maria Madre di Dio", "19-3":"San Giuseppe", "29-6":"Pietro e Paolo", "15-8":"Assunzione",
-            "1-11":"Tutti i Santi", "25-12":"Natale", "26-12":"Santo Stefano"
-        };
 
         // --- INIT ---
         document.addEventListener('DOMContentLoaded', () => {
-            // Check day change
             const today = new Date().toISOString().split('T')[0];
             if(db.water.date !== today) { db.water.count=0; db.water.date=today; saveDB(); }
             
-            // Apply Theme
             document.body.setAttribute('data-theme', db.settings.theme);
             document.getElementById('user-name').value = db.settings.name;
             document.getElementById('user-key').value = db.settings.aiKey || '';
-
-            // Pre-fill dates
             document.querySelectorAll('input[type="date"]').forEach(i => i.valueAsDate = new Date());
 
-            updateBanner();
+            updateTitle();
+            getWeather();
             renderAll();
         });
 
-        function saveDB() { localStorage.setItem('MyDavide8', JSON.stringify(db)); }
+        function saveDB() { localStorage.setItem('MyDavide10', JSON.stringify(db)); }
         function renderAll() {
             renderHome();
             renderCal();
@@ -471,131 +478,161 @@
             renderTodo();
         }
 
-        // --- NAVIGATION ---
+        function updateTitle() {
+            const name = db.settings.name || 'Davide';
+            document.getElementById('app-logo').innerText = `MY${name.toUpperCase()}`;
+        }
+
         function navTo(id) {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(v => v.classList.remove('active'));
             document.getElementById('view-'+id).classList.add('active');
             if(id !== 'home') document.getElementById('n-'+id).classList.add('active');
-            
-            if(id==='home') { renderHome(); }
-            if(id==='cal') { renderCal(); }
-            if(id==='fin') { renderFin(); }
-            if(id==='todo') { renderTodo(); }
+            if(id==='home') renderHome();
+            if(id==='cal') renderCal();
+            if(id==='fin') renderFin();
+            if(id==='todo') renderTodo();
         }
 
-        // --- HOME LOGIC ---
-        function updateBanner() {
-            const today = new Date();
-            const dateStr = today.getDate()+'-'+(today.getMonth()+1);
-            const saint = saints[dateStr] || "San del Giorno";
-            
-            document.getElementById('banner-sub').innerText = today.toLocaleDateString('it-IT', {weekday:'long', day:'numeric', month:'long'}).toUpperCase();
-            document.getElementById('banner-main').innerText = saint;
-            
-            // Next event
-            const next = getAllEventsForDay(today).sort((a,b)=>a.time.localeCompare(b.time))[0];
-            document.getElementById('banner-extra').innerText = next ? `Prossimo: ${next.title} (${next.time})` : "Nessun impegno imminente";
+        // --- HOME ---
+        function getWeather() {
+            // Placeholder + Geocoding semplice tramite API esterna gratuita
+            document.getElementById('w-desc').innerText = "Rilevamento...";
+            if(navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(async p => {
+                    const lat = p.coords.latitude;
+                    const lon = p.coords.longitude;
+                    
+                    // 1. Meteo
+                    const r = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`);
+                    const d = await r.json();
+                    document.getElementById('w-temp').innerText = Math.round(d.current_weather.temperature)+"°";
+                    
+                    // 2. Città (Reverse Geo)
+                    try {
+                        const geo = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=it`);
+                        const geoData = await geo.json();
+                        document.getElementById('w-desc').innerText = `${geoData.city || geoData.locality}, ${geoData.countryCode}`;
+                    } catch {
+                        document.getElementById('w-desc').innerText = "Posizione Sconosciuta";
+                    }
+                });
+            } else {
+                document.getElementById('w-desc').innerText = "GPS Disabilitato";
+            }
         }
 
         function renderHome() {
+            // Banner
+            const today = new Date();
+            document.getElementById('banner-date').innerText = today.toLocaleDateString('it-IT', {weekday:'long', day:'numeric', month:'long'}).toUpperCase();
+
+            // Next Event (Solo Agenda/Eventi)
+            const evs = getAllEventsForDay(today).filter(e => e.type === 'evt').sort((a,b)=>a.time.localeCompare(b.time));
+            const next = evs.find(e => e.time > new Date().toLocaleTimeString('it-IT').slice(0,5));
+            
+            if(next) {
+                document.getElementById('next-evt-title').innerText = next.title;
+                document.getElementById('next-evt-time').innerText = next.time;
+            } else if (evs.length > 0) {
+                 document.getElementById('next-evt-title').innerText = "Eventi Terminati";
+                 document.getElementById('next-evt-time').innerText = "Per oggi";
+            } else {
+                document.getElementById('next-evt-title').innerText = "Nessun Evento";
+                document.getElementById('next-evt-time').innerText = "Agenda Libera";
+            }
+
             // Water
             const wg = document.getElementById('water-grid');
             wg.innerHTML = '';
             for(let i=0; i<8; i++) {
                 const g = document.createElement('div');
                 g.className = `glass ${i<db.water.count?'full':''}`;
-                g.onclick = () => {
-                    db.water.count = (i < db.water.count) ? i : i+1;
-                    saveDB(); 
-                    document.getElementById('water-text').innerText = `${db.water.count}/8`;
-                    renderHome();
-                };
+                g.onclick = () => { db.water.count = (i < db.water.count) ? i : i+1; saveDB(); renderHome(); };
                 wg.appendChild(g);
             }
             document.getElementById('water-text').innerText = `${db.water.count}/8`;
             document.getElementById('water-bar').style.width = `${(db.water.count/8)*100}%`;
 
-            // Balance
+            // Balance & Charts
             const bal = db.finance.reduce((a,b)=>a+b.amt,0);
             document.getElementById('home-bal').innerText = `€${bal.toFixed(2)}`;
+            renderHomeCharts();
 
-            // Task Pct
+            // Task
             const tot = db.tasks.length;
             const done = db.tasks.filter(t=>t.done).length;
             const pct = tot===0?100:Math.round((done/tot)*100);
             document.getElementById('task-pct').innerText = `${pct}%`;
             document.getElementById('home-task-desc').innerText = pct===100 ? "Tutto completato!" : `${tot-done} attività rimanenti.`;
 
-            // Home Charts
-            renderHomeCharts(bal, done, tot-done);
+            // Notes
+            const nl = document.getElementById('note-list');
+            nl.innerHTML = '';
+            db.notes.forEach((n, idx) => {
+                const c = document.createElement('div');
+                c.className = 'note-card';
+                c.innerHTML = `${n} <i class="fas fa-times note-del" onclick="delNote(${idx})"></i>`;
+                nl.appendChild(c);
+            });
         }
 
-        function renderHomeCharts(bal, done, notDone) {
-            // Finance Line (Simple Mock Trend based on balance history)
+        function addNote() { const v=document.getElementById('note-in').value; if(v){db.notes.push(v); document.getElementById('note-in').value=''; saveDB(); renderHome();} }
+        function delNote(i) { db.notes.splice(i,1); saveDB(); renderHome(); }
+
+        function renderHomeCharts() {
+            // Fin
             const ctxF = document.getElementById('homeFinChart').getContext('2d');
             if(charts.hf) charts.hf.destroy();
-            // Create data points
-            let run = 0;
-            const dataF = db.finance.slice(-10).map(f=>{ run+=f.amt; return run; });
-            charts.hf = new Chart(ctxF, {
-                type:'line',
-                data: { labels:dataF.map((_,i)=>i), datasets:[{data:dataF, borderColor:'#10b981', borderWidth:2, pointRadius:0, tension:0.4}] },
-                options:{plugins:{legend:false}, scales:{x:{display:false}, y:{display:false}}, maintainAspectRatio:false}
-            });
+            let r=0; const dF = db.finance.slice(-10).map(f=>{r+=f.amt; return r;});
+            charts.hf = new Chart(ctxF, { type:'line', data:{labels:dF.map((_,i)=>i), datasets:[{data:dF, borderColor:'#10b981', borderWidth:3, pointRadius:0, tension:0.4}]}, options:{plugins:{legend:false}, scales:{x:{display:false}, y:{display:false}}, maintainAspectRatio:false} });
 
-            // Task Pie
+            // Task
             const ctxT = document.getElementById('homeTaskChart').getContext('2d');
             if(charts.ht) charts.ht.destroy();
-            charts.ht = new Chart(ctxT, {
-                type:'doughnut',
-                data:{labels:['Fatti','Da Fare'], datasets:[{data:[done,notDone], backgroundColor:['#10b981','#ef4444'], borderWidth:0}]},
-                options:{plugins:{legend:false}, maintainAspectRatio:false, cutout:'70%'}
-            });
+            const done = db.tasks.filter(t=>t.done).length;
+            charts.ht = new Chart(ctxT, { type:'doughnut', data:{labels:[], datasets:[{data:[done, db.tasks.length-done], backgroundColor:['#10b981','#ef4444'], borderWidth:0}]}, options:{plugins:{legend:false}, maintainAspectRatio:false, cutout:'70%'} });
         }
 
-        // --- AGENDA LOGIC (THE MASTER HUB) ---
+        // --- AGENDA & RECURRENCE ---
         function setToday() { curDate=new Date(); selDate=new Date(); renderCal(); }
         function changeMonth(d) { curDate.setMonth(curDate.getMonth()+d); renderCal(); }
 
-        // Core Function: Aggregate Everything
         function getAllEventsForDay(date) {
-            const dStr = date.toISOString().split('T')[0];
-            const dayIdx = date.getDay(); 
+            const dStr = date.toLocaleDateString('en-CA'); 
+            const dayIdx = date.getDay(); // 0=Dom
             const monthIdx = date.getMonth();
-            const dom = date.getDate(); // day of month
+            const dom = date.getDate(); 
 
             let items = [];
 
-            // 1. Events
+            // Events
             db.events.forEach(e => {
-                let match = false;
-                if(e.recurType === 'none' && e.date === dStr) match=true;
-                if(e.recurType === 'weekly' && e.recurVals.includes(dayIdx)) match=true;
-                if(e.recurType === 'monthly' && e.recurVals.includes(monthIdx) && new Date(e.date).getDate() === dom) match=true;
-                
-                if(match) items.push({type:'evt', title:e.title, time:e.start, color:'var(--col-cal)', id:e.id});
+                let m = false;
+                if(e.recurType==='none' && e.date===dStr) m=true;
+                if(e.recurType==='weekly' && e.recurVals && e.recurVals.includes(dayIdx)) m=true;
+                if(e.recurType==='yearly' && e.recurVals && e.recurVals.includes(monthIdx)) m=true; 
+                if(m) items.push({type:'evt', title:e.title, time:e.start, color:'var(--col-cal)', id:e.id});
             });
 
-            // 2. Tasks (with date or recurrence)
+            // Tasks
             db.tasks.forEach(t => {
-                let match = false;
-                if(t.recurType === 'none' && t.date === dStr) match=true;
-                if(t.recurType === 'weekly' && t.recurVals.includes(dayIdx)) match=true;
-                
-                if(match) items.push({type:'task', title:t.title, time:'--', color:'var(--col-task)', id:t.id, done:t.done});
+                let m = false;
+                if(t.recurType==='none' && t.date===dStr) m=true;
+                if(t.recurType==='weekly' && t.recurVals && t.recurVals.includes(dayIdx)) m=true;
+                if(t.recurType==='yearly' && t.recurVals && t.recurVals.includes(monthIdx)) m=true;
+                if(m) items.push({type:'task', title:t.title, time:'--', color:'var(--col-task)', id:t.id, done:t.done});
             });
 
-            // 3. Finance (Recurring or dated)
+            // Finance
             db.finance.forEach(f => {
-                let match = false;
-                if(f.recurType === 'none' && f.date === dStr) match=true;
-                if(f.recurType === 'monthly' && new Date(f.date).getDate() === dom) match=true;
-                if(f.recurType === 'custom_months' && f.recurVals.includes(monthIdx) && new Date(f.date).getDate() === dom) match=true;
-
-                if(match) items.push({type:'fin', title:`${f.desc} (€${f.amt})`, time:'--', color:'var(--col-fin)', id:f.id});
+                let m = false;
+                if(f.recurType==='none' && f.date===dStr) m=true;
+                if(f.recurType==='weekly' && f.recurVals && f.recurVals.includes(dayIdx)) m=true;
+                if(f.recurType==='monthly' && new Date(f.date).getDate() === dom) m=true;
+                if(f.recurType==='yearly' && f.recurVals && f.recurVals.includes(monthIdx) && new Date(f.date).getDate() === dom) m=true;
+                if(m) items.push({type:'fin', title:`${f.desc} (€${f.amt})`, time:'--', color:'var(--col-fin)', id:f.id});
             });
-
             return items;
         }
 
@@ -610,27 +647,26 @@
 
             for(let i=0; i<pad; i++) grid.appendChild(document.createElement('div'));
 
+            const now = new Date();
+            const isCurrMonth = now.getMonth() === curDate.getMonth() && now.getFullYear() === curDate.getFullYear();
+
             for(let i=1; i<=dim; i++) {
                 const cell = document.createElement('div');
                 const loopD = new Date(curDate.getFullYear(), curDate.getMonth(), i);
-                const isToday = loopD.toISOString().split('T')[0] === new Date().toISOString().split('T')[0];
-                const isSel = loopD.toISOString().split('T')[0] === selDate.toISOString().split('T')[0];
+                const isToday = isCurrMonth && i === now.getDate();
+                const isSel = loopD.toDateString() === selDate.toDateString();
                 
                 cell.className = `day-cell ${isToday?'today':''} ${isSel?'selected':''}`;
                 cell.innerHTML = `<span>${i}</span>`;
                 
-                // Dots
                 const items = getAllEventsForDay(loopD);
                 if(items.length > 0) {
                     const dr = document.createElement('div'); dr.className='dots-row';
-                    // Show max 3 dots colors
-                    const types = [...new Set(items.map(x=>x.color))].slice(0,3);
-                    types.forEach(c => {
+                    [...new Set(items.map(x=>x.color))].slice(0,3).forEach(c => {
                         dr.innerHTML += `<div class="dot" style="background:${c}"></div>`;
                     });
                     cell.appendChild(dr);
                 }
-
                 cell.onclick = () => { selDate = loopD; renderCal(); };
                 grid.appendChild(cell);
             }
@@ -641,14 +677,11 @@
             const l = document.getElementById('cal-day-list');
             l.innerHTML = '';
             const items = getAllEventsForDay(selDate);
-            
             if(items.length===0) l.innerHTML = `<p style="text-align:center; color:var(--col-soft); padding:20px">Nessun impegno.</p>`;
 
-            items.sort((a,b) => (a.time === '--' ? '24:00' : a.time).localeCompare(b.time === '--' ? '24:00' : b.time));
-
-            items.forEach(i => {
+            items.sort((a,b)=>a.time.localeCompare(b.time)).forEach(i => {
                 const row = document.createElement('div');
-                row.style.display='flex'; row.style.alignItems='center'; row.style.padding='15px'; row.style.background='var(--bg-card)'; row.style.marginBottom='10px'; row.style.borderRadius='15px'; row.style.borderLeft=`5px solid ${i.color}`;
+                row.style.cssText = `display:flex; align-items:center; padding:15px; background:var(--bg-card); margin-bottom:10px; border-radius:15px; border-left:5px solid ${i.color}; box-shadow:0 2px 5px rgba(0,0,0,0.05)`;
                 row.innerHTML = `
                     <div style="flex:1">
                         <div style="font-weight:bold">${i.title}</div>
@@ -665,27 +698,17 @@
         function renderFin() {
             const bal = db.finance.reduce((a,b)=>a+b.amt,0);
             document.getElementById('fin-bal-w').innerText = `€${bal.toFixed(2)}`;
-            
-            // Month calc
-            const startM = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
-            const mTrans = db.finance.filter(f => new Date(f.date) >= startM);
-            const mBal = mTrans.reduce((a,b)=>a+b.amt,0);
+            const mBal = db.finance.filter(f=>new Date(f.date).getMonth()===new Date().getMonth()).reduce((a,b)=>a+b.amt,0);
             document.getElementById('fin-month-w').innerText = `${mBal>0?'+':''}€${mBal}`;
 
             const list = document.getElementById('fin-list');
             list.innerHTML = '';
-            // History
             db.finance.slice().sort((a,b)=>new Date(b.date)-new Date(a.date)).forEach(f => {
-                const d = document.createElement('div');
-                d.style.display='flex'; d.style.justifyContent='space-between'; d.style.padding='15px'; d.style.borderBottom='1px solid #eee';
-                d.innerHTML = `
-                    <div><b>${f.desc}</b><div style="font-size:0.8rem; color:grey">${f.date} ${f.recurType!=='none'?'🔄':''}</div></div>
-                    <div style="font-weight:bold; color:${f.amt>0?'var(--col-fin)':'var(--col-task)'}">${f.amt}€</div>
-                `;
-                list.appendChild(d);
+                const div = document.createElement('div');
+                div.style.cssText = 'display:flex; justify-content:space-between; padding:15px; border-bottom:1px solid #eee';
+                div.innerHTML = `<div><b>${f.desc}</b><br><small style="color:grey">${f.date} ${f.recurType!=='none'?'🔄':''}</small></div><b style="color:${f.amt>0?'var(--col-fin)':'var(--col-task)'}">${f.amt}€</b>`;
+                list.appendChild(div);
             });
-
-            // Charts
             renderFinCharts();
         }
 
@@ -694,30 +717,21 @@
             const ctxL = document.getElementById('finLineChart').getContext('2d');
             if(charts.fb) charts.fb.destroy();
             if(charts.fl) charts.fl.destroy();
-
-            // Bar (Inc vs Exp)
+            
             const inc = db.finance.filter(f=>f.amt>0).reduce((a,b)=>a+b.amt,0);
             const exp = Math.abs(db.finance.filter(f=>f.amt<0).reduce((a,b)=>a+b.amt,0));
-            charts.fb = new Chart(ctxB, {
-                type:'bar', data:{labels:['Entrate','Uscite'], datasets:[{data:[inc,exp], backgroundColor:['#10b981','#ef4444']}]},
-                options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}}
-            });
+            charts.fb = new Chart(ctxB, { type:'bar', data:{labels:['In','Out'], datasets:[{data:[inc,exp], backgroundColor:['#10b981','#ef4444']}]}, options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}} });
 
-            // Line (Trend)
-            let r=0;
-            const data = db.finance.slice(-20).map(f=>{r+=f.amt; return r;});
-            charts.fl = new Chart(ctxL, {
-                type:'line', data:{labels:data.map((_,i)=>i), datasets:[{data:data, borderColor:'#3b82f6', tension:0.4}]},
-                options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{x:{display:false}}}
-            });
+            let r=0; const data=db.finance.slice(-20).map(f=>{r+=f.amt; return r;});
+            charts.fl = new Chart(ctxL, { type:'line', data:{labels:data.map((_,i)=>i), datasets:[{data, borderColor:'#3b82f6', tension:0.4}]}, options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{display:false}}} });
         }
 
-        // --- TASK ---
+        // --- TASKS ---
         function renderTodo() {
             const c = document.getElementById('todo-container');
             c.innerHTML = '';
             db.lists.forEach(l => {
-                const ts = db.tasks.filter(t=>t.listId===l.id);
+                const ts = db.tasks.filter(t => String(t.listId) === String(l.id));
                 const d = ts.filter(t=>t.done).length;
                 const p = ts.length===0?0:(d/ts.length)*100;
                 
@@ -732,7 +746,7 @@
                         <div style="display:flex; align-items:center; padding:10px 0; border-top:1px solid #eee">
                             <i class="fas fa-${t.done?'check-circle':'circle'}" style="color:${t.done?l.col:'#ccc'}; font-size:1.2rem; cursor:pointer" onclick="togTask(${t.id})"></i>
                             <span style="margin-left:10px; flex:1; text-decoration:${t.done?'line-through':''}">${t.title}</span>
-                            <i class="fas fa-trash" style="opacity:0.3; cursor:pointer" onclick="delTask(${t.id})"></i>
+                            <small>${t.recurType!=='none'?'🔄':''}</small>
                         </div>
                     `;
                 });
@@ -740,40 +754,22 @@
             });
         }
         function togTask(id) { const t=db.tasks.find(x=>x.id===id); t.done=!t.done; saveDB(); renderTodo(); }
-        function delTask(id) { db.tasks=db.tasks.filter(x=>x.id!==id); saveDB(); renderTodo(); }
 
-        // --- MANUAL SAVE LOGIC ---
-        // Helper to get selected values from multi-select buttons
+        // --- SAVE LOGIC ---
+        function togBtn(b) { b.classList.toggle('active'); }
         function getVals(pid) {
             const vals = [];
-            document.querySelectorAll(`#${pid} .ms-btn.active`).forEach(b => {
-                // Determine index from onclick attribute... hacky but works for single file
-                // Better: rely on loop index logic in HTML generation or data attr
-                // I used onclick="togBtn(this, X)". Let's parse it or rely on order.
-                // Let's assume order is consistent with rendering.
-                // Re-implementation: Let's use data attributes for robustness.
-            });
-            // Actually, let's just re-read the onclick attr since it's hardcoded
-            const btns = document.querySelectorAll(`#${pid} .ms-btn`);
-            btns.forEach((b, i) => {
-                if(b.classList.contains('active')) {
-                    // Extract value passed to toggle function
-                    const val = parseInt(b.getAttribute('onclick').match(/\d+/)[0]);
-                    vals.push(val);
-                }
-            });
+            document.querySelectorAll(`#${pid} .ms-btn.active`).forEach(b => vals.push(parseInt(b.getAttribute('onclick').match(/\d+/)[0])));
             return vals;
         }
 
-        function togBtn(b) { b.classList.toggle('active'); }
         function toggleRecurOptions(type, val) {
-            // Hide all
-            if(document.getElementById(`${type}-days`)) document.getElementById(`${type}-days`).style.display='none';
-            if(document.getElementById(`${type}-months`)) document.getElementById(`${type}-months`).style.display='none';
-            
-            if(val === 'weekly') document.getElementById(`${type}-days`).style.display='flex';
-            if(val === 'monthly' && type === 'evt') document.getElementById(`${type}-months`).style.display='flex'; // Actually usually monthly is day of month, but request said "select months"
-            if(val === 'custom_months' || (type==='evt' && val==='monthly')) document.getElementById(`${type}-months`).style.display='flex';
+            const d = document.getElementById(`${type}-days`);
+            const m = document.getElementById(`${type}-months`);
+            if(d) d.style.display='none';
+            if(m) m.style.display='none';
+            if(val === 'weekly' && d) d.style.display='flex';
+            if(val === 'yearly' && m) m.style.display='flex';
         }
 
         function saveEvt() {
@@ -782,84 +778,71 @@
             const s=document.getElementById('evt-start').value;
             const e=document.getElementById('evt-end').value;
             const r=document.getElementById('evt-recur').value;
-            const days = getVals('evt-days');
-            const months = getVals('evt-months');
-
-            if(t&&d) {
-                db.events.push({id:Date.now(), title:t, date:d, start:s, end:e, recurType:r, recurVals: r==='weekly'?days:months});
-                saveDB(); closeModal(null,'modal-evt'); renderCal();
-            }
+            const v = r==='weekly' ? getVals('evt-days') : (r==='yearly'?getVals('evt-months'):[]);
+            if(t&&d) { db.events.push({id:Date.now(), title:t, date:d, start:s, end:e, recurType:r, recurVals:v}); saveDB(); closeModal(null,'modal-evt'); renderCal(); }
         }
 
         function saveFin() {
-            const desc = document.getElementById('fin-desc').value;
-            const amt = parseFloat(document.getElementById('fin-amt').value);
-            const d = document.getElementById('fin-date').value;
-            const r = document.getElementById('fin-recur').value;
-            const months = getVals('fin-months');
-
-            if(desc && amt) {
-                db.finance.push({id:Date.now(), desc, amt, date:d, recurType:r, recurVals:months});
-                saveDB(); closeModal(null,'modal-fin'); renderFin();
-            }
-        }
-
-        function saveList() {
-            const n = document.getElementById('list-name').value;
-            const c = document.getElementById('list-col').value;
-            if(n) { db.lists.push({id:Date.now(), name:n, col:c}); saveDB(); closeModal(null,'modal-list'); renderTodo(); updateTaskSelect(); }
+            const d=document.getElementById('fin-desc').value;
+            const a=parseFloat(document.getElementById('fin-amt').value);
+            const date=document.getElementById('fin-date').value;
+            const r=document.getElementById('fin-recur').value;
+            const v = r==='weekly' ? getVals('fin-days') : (r==='yearly'?getVals('fin-months'):[]);
+            if(d&&a) { db.finance.push({id:Date.now(), desc:d, amt:a, date:date, recurType:r, recurVals:v}); saveDB(); closeModal(null,'modal-fin'); renderFin(); }
         }
 
         function saveTask() {
-            const t = document.getElementById('task-title').value;
-            const l = document.getElementById('task-list-sel').value;
-            const d = document.getElementById('task-date').value;
-            const r = document.getElementById('task-recur').value;
-            const days = getVals('task-days');
-
-            if(t && l) {
-                db.tasks.push({id:Date.now(), title:t, listId:l, date:d, done:false, recurType:r, recurVals:days});
-                saveDB(); closeModal(null,'modal-task'); renderTodo();
-            }
+            const t=document.getElementById('task-title').value;
+            const l=document.getElementById('task-list-sel').value;
+            const d=document.getElementById('task-date').value;
+            const r=document.getElementById('task-recur').value;
+            const v = r==='weekly' ? getVals('task-days') : (r==='yearly'?getVals('task-months'):[]);
+            if(t&&l) { db.tasks.push({id:Date.now(), title:t, listId:l, date:d, done:false, recurType:r, recurVals:v}); saveDB(); closeModal(null,'modal-task'); renderTodo(); }
+        }
+        
+        function saveList() {
+            const n=document.getElementById('list-name').value;
+            const c=document.getElementById('list-col').value;
+            if(n) { db.lists.push({id:Date.now(), name:n, col:c}); saveDB(); closeModal(null,'modal-list'); renderTodo(); updateTaskSelect(); }
         }
 
         function updateTaskSelect() {
-            const s = document.getElementById('task-list-sel');
-            s.innerHTML = '';
-            db.lists.forEach(l => {
-                s.innerHTML += `<option value="${l.id}">${l.name}</option>`;
-            });
+            const s = document.getElementById('task-list-sel'); s.innerHTML = '';
+            db.lists.forEach(l => s.innerHTML += `<option value="${l.id}">${l.name}</option>`);
         }
 
-        // --- UI UTILS ---
-        function toggleTheme() {
-            db.settings.theme = db.settings.theme==='light'?'dark':'light';
-            document.body.setAttribute('data-theme', db.settings.theme);
-            saveDB();
-        }
-        function openModal(id) { 
-            if(id === 'modal-task') updateTaskSelect();
-            document.getElementById(id).style.display='flex'; 
-        }
+        // --- UTILS ---
+        function toggleTheme() { db.settings.theme=db.settings.theme==='light'?'dark':'light'; document.body.setAttribute('data-theme',db.settings.theme); saveDB(); }
+        function openModal(id) { if(id==='modal-task') updateTaskSelect(); document.getElementById(id).style.display='flex'; }
         function closeModal(e, id) { if(!e||e.target.id===id) document.getElementById(id).style.display='none'; }
-        
-        function saveSet() {
-            db.settings.name = document.getElementById('user-name').value;
-            db.settings.aiKey = document.getElementById('user-key').value;
-            saveDB();
+        function saveSet() { db.settings.name=document.getElementById('user-name').value; db.settings.aiKey=document.getElementById('user-key').value; updateTitle(); saveDB(); }
+        function resetApp() { if(confirm("Cancellare tutto?")) { localStorage.removeItem('MyDavide10'); location.reload(); } }
+        function exportData() { const a=document.createElement('a'); a.href="data:text/json;charset=utf-8,"+encodeURIComponent(JSON.stringify(db)); a.download="MyDavide_Backup.json"; a.click(); }
+        function exportCSV() { alert("Funzione CSV pronta per essere implementata."); }
+        function importData(el) { const r=new FileReader(); r.onload=e=>{db=JSON.parse(e.target.result); saveDB(); location.reload();}; r.readAsText(el.files[0]); }
+
+        // --- AI ---
+        function openAI() { document.getElementById('ai-view').classList.add('open'); }
+        function closeAI() { document.getElementById('ai-view').classList.remove('open'); }
+        async function sendAI() {
+            const txt = document.getElementById('ai-in').value; if(!txt) return;
+            addMsg(txt,'user'); document.getElementById('ai-in').value='';
+            const k = db.settings.aiKey;
+            if(!k) { addMsg("Manca API Key.",'ai'); return; }
+            try {
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${k}`, {
+                    method:'POST', headers:{'Content-Type':'application/json'},
+                    body:JSON.stringify({contents:[{parts:[{text:txt}]}]})
+                });
+                const d = await res.json();
+                addMsg(d.candidates[0].content.parts[0].text, 'ai');
+            } catch { addMsg("Errore API.",'ai'); }
         }
-        
-        function exportData() {
-            const a = document.createElement('a');
-            a.href = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db));
-            a.download = "MyDavide_Backup.json"; a.click();
+        function addMsg(t,s) {
+            const b = document.getElementById('chat-box');
+            b.innerHTML += `<div class="msg msg-${s}">${t}</div>`;
+            b.scrollTop = b.scrollHeight;
         }
-        function importData(el) {
-            const fr = new FileReader();
-            fr.onload = e => { db=JSON.parse(e.target.result); saveDB(); location.reload(); };
-            fr.readAsText(el.files[0]);
-        }
-        function resetApp() { if(confirm("Cancellare tutto?")) { localStorage.removeItem('MyDavide8'); location.reload(); } }
 
     </script>
 </body>
